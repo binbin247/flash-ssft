@@ -31,8 +31,9 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from flashlle.operators import kerr_, linear_and_pump_
-from _torch_reference import torch_kerr_, torch_linear_and_pump_
+from flashlle.operators import kerr_, kerr_raman_, linear_and_pump_
+from _numpy_reference import numpy_kerr_raman
+from _torch_reference import torch_kerr_, torch_kerr_raman_, torch_linear_and_pump_
 
 VARIANTS = ("torch_eager", "triton_eager", "torch_graph", "triton_graph")
 LABELS = ("PyTorch eager", "Triton eager", "PyTorch CUDA Graph", "Triton CUDA Graph")
@@ -40,7 +41,7 @@ LABELS = ("PyTorch eager", "Triton eager", "PyTorch CUDA Graph", "Triton CUDA Gr
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--operators", nargs="+", choices=("kerr", "linear_and_pump"),
+    parser.add_argument("--operators", nargs="+", choices=("kerr", "kerr_raman", "linear_and_pump"),
                         default=["kerr", "linear_and_pump"])
     parser.add_argument("--sizes", nargs="+", type=int, default=[2**p for p in range(7, 21)])
     parser.add_argument("--repeats", type=int, default=7)
@@ -50,6 +51,8 @@ def parse_args(argv=None):
                              "Default adapts to N (64-1024 with the default chunk).")
     parser.add_argument("--warmup", type=int, default=20)
     parser.add_argument("--h", type=float, default=0.005)
+    parser.add_argument("--raman", type=float, default=0.01,
+                        help="Dimensionless Raman coefficient on a 2π-periodic angular grid")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     parser.add_argument("--output", type=Path, default=ROOT / "results" / f"benchmark_operators_{stamp}",
                         help="Output prefix, without .json/.png/.svg")
@@ -60,6 +63,8 @@ def parse_args(argv=None):
         parser.error("calls must be positive and divisible by chunk")
     if not np.isfinite(args.h) or args.h < 0:
         parser.error("h must be finite and nonnegative")
+    if not np.isfinite(args.raman):
+        parser.error("raman must be finite")
     args.operators = list(dict.fromkeys(args.operators))
     args.sizes = sorted(set(args.sizes))
     return args
@@ -68,7 +73,7 @@ def parse_args(argv=None):
 def metadata():
     paths = sorted((ROOT / "src" / "flashlle").rglob("*.py"))
     paths.extend(ROOT / "benchmarks" / name for name in (
-        "_torch_reference.py", "benchmark_operators.py", "benchmark_kerr.py"
+        "_torch_reference.py", "_numpy_reference.py", "benchmark_operators.py", "benchmark_kerr.py"
     ))
     device = torch.cuda.current_device()
     return {
@@ -83,11 +88,13 @@ def metadata():
     }
 
 
-def formula(operator, seed, linear, pump, h, calls):
+def formula(operator, seed, linear, pump, h, calls, raman=0.01):
     """Closed-form complex128 check, independent of GPU kernels and Python loops."""
     field = seed.astype(np.complex128)
     if operator == "kerr":
         return field * np.exp(1j * h * calls * np.abs(field) ** 2)
+    if operator == "kerr_raman":
+        return numpy_kerr_raman(field, h, raman, calls)
     factors = linear.astype(np.complex128)
     evolved = factors**calls
     field *= evolved
@@ -130,11 +137,14 @@ def benchmark(operator, seed, args):
     if operator == "kerr":
         functions = (torch_kerr_, kerr_, torch_kerr_, kerr_)
         operations = [partial(fn, state, args.h) for fn, state in zip(functions, states)]
+    elif operator == "kerr_raman":
+        functions = (torch_kerr_raman_, kerr_raman_) * 2
+        operations = [partial(fn, state, args.h, args.raman) for fn, state in zip(functions, states)]
     else:
         functions = (torch_linear_and_pump_, linear_and_pump_) * 2
         operations = [partial(fn, state, linear_gpu, pump) for fn, state in zip(functions, states)]
 
-    single = formula(operator, seed, linear, pump, args.h, 1)
+    single = formula(operator, seed, linear, pump, args.h, 1, args.raman)
     for operation, state in zip(operations[:2], states[:2]):
         assert operation() is state
         np.testing.assert_allclose(state.cpu().numpy(), single, rtol=2e-6, atol=2e-7)
@@ -160,7 +170,7 @@ def benchmark(operator, seed, args):
 
     for eager, graphed in ((0, 2), (1, 3)):
         torch.testing.assert_close(states[eager], states[graphed], rtol=1e-6, atol=1e-7)
-    expected = formula(operator, seed, linear, pump, args.h, calls)
+    expected = formula(operator, seed, linear, pump, args.h, calls, args.raman)
     errors = {}
     for variant, state in zip(VARIANTS, states):
         actual = state.cpu().numpy().astype(np.complex128)
@@ -213,6 +223,10 @@ def main(argv=None):
             "included": "host dispatch and GPU execution of the same total operator count",
             "order": "rotate all four variants each repetition",
             "h": args.h, "repeats": args.repeats, "graph_chunk": args.chunk,
+            "raman": args.raman,
+            "raman_grid": "theta=2*pi*arange(N)/N; integer wavenumbers; even-N Nyquist derivative zero",
+            "raman_seed": "sqrt(1+0.2*cos(3*theta))*exp(0.1j*sin(theta)), cast to complex64",
+            "raman_timing": "includes intensity, rfft, spectral derivative, irfft, phase update and temporary allocations",
             "warmup_calls_per_variant": args.warmup, "seed": 20261020,
             "linear_coefficients": "exp((-0.2-0.7j)*(1+index/N)*h)",
             "pump": "(0.125-0.375j)*h, added to the zero mode",
@@ -227,7 +241,12 @@ def main(argv=None):
     for n in args.sizes:
         seed = (0.5 * (rng.standard_normal(n) + 1j * rng.standard_normal(n))).astype(np.complex64)
         for operator in args.operators:
-            row = benchmark(operator, seed, args)
+            operator_seed = seed
+            if operator == "kerr_raman":
+                theta = 2 * np.pi * np.arange(n) / n
+                operator_seed = (np.sqrt(1 + 0.2 * np.cos(3 * theta))
+                                 * np.exp(0.1j * np.sin(theta))).astype(np.complex64)
+            row = benchmark(operator, operator_seed, args)
             result["rows"].append(row)
             timings = " ".join(f"{name}={value:.3f}µs" for name, value in row["median_us_per_call"].items())
             print(f"{operator} N={n} calls={row['calls_per_repeat']} {timings}", flush=True)

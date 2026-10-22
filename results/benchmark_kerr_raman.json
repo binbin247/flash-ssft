@@ -1,0 +1,241 @@
+{
+  "metadata": {
+    "started_utc": "2026-10-22T08:58:58.145467+00:00",
+    "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "numpy": "2.4.6",
+    "torch": "2.13.0+cu126",
+    "triton": "3.7.1",
+    "torch_cuda": "12.6",
+    "device_index": 0,
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "compute_capability": [
+      7,
+      5
+    ],
+    "source_sha256": {
+      "src/flashlle/__init__.py": "ae2138c6f1feb48b44e5c558e4d7acb333996fb650c4d110ed9e0bec07267b68",
+      "src/flashlle/_validation.py": "d1072416a703030fdfe897d5f15e04837b4bad92c227764d8ec10ff2580996dc",
+      "src/flashlle/gpu.py": "218c111251ad058497b17ff9af2618f629b2fc7bfdcb9802296d16e8faf0be73",
+      "src/flashlle/model.py": "b944dd802df015e206f2d0170d66a7a46d2cbefa63e11a99055cd309c69a0389",
+      "src/flashlle/operators/__init__.py": "a2d0f34483ddc1bda2ad44ed17994f12b46d36f538dec589c984a0f2eb666d22",
+      "src/flashlle/operators/_validation.py": "9232b400123a21125ee4d8372d1faee5282f29c1eccb4dac01cf508ddeb21b33",
+      "src/flashlle/operators/kerr.py": "e7c70da98283ce640571f1e579d23adadea3bd79275ea2b0ad2d4e5c8f000702",
+      "src/flashlle/operators/kerr_raman.py": "08e26ebfad5ef0c995390c03f49925a4742bc856782b10f2b0af83cd05cd3387",
+      "src/flashlle/operators/linear_and_pump.py": "103945a05e6d17f8e335d8bd4193b3fbb7523717923d6180227845e6378cb308",
+      "src/flashlle/reference.py": "0fa757c280d302892bb8b21cbf06a8ef9d37ccf5258564f5a13bab06b76b8bad",
+      "benchmarks/_torch_reference.py": "b4cb6e3d38f4272349bef769ad3c57df64e49bfd250eb4191bab3580af005479",
+      "benchmarks/_numpy_reference.py": "370967614ead427b9e7d374829c0730a9316228136f0646a2868c705e08ed921",
+      "benchmarks/benchmark_operators.py": "df435a4fd1c3fe39efa65d3d0e80582b7ed2bc34023edecfdb2f59ae4ffaba62",
+      "benchmarks/benchmark_kerr.py": "294c09cfaf0ae61e56395dff6abae152e893304bea32ac010d36237187dd2f90"
+    },
+    "finished_utc": "2026-10-22T08:59:18.032533+00:00"
+  },
+  "complete": true,
+  "protocol": {
+    "dtype": "complex64",
+    "device_residency": "GPU for every timed variant",
+    "timing": "perf_counter with CUDA synchronization before and after",
+    "excluded": [
+      "transfers",
+      "input reset",
+      "coefficient preparation",
+      "compilation",
+      "warmup",
+      "graph capture"
+    ],
+    "included": "host dispatch and GPU execution of the same total operator count",
+    "order": "rotate all four variants each repetition",
+    "h": 0.005,
+    "repeats": 7,
+    "graph_chunk": 64,
+    "raman": 0.01,
+    "raman_grid": "theta=2*pi*arange(N)/N; integer wavenumbers; even-N Nyquist derivative zero",
+    "raman_seed": "sqrt(1+0.2*cos(3*theta))*exp(0.1j*sin(theta)), cast to complex64",
+    "raman_timing": "includes intensity, rfft, spectral derivative, irfft, phase update and temporary allocations",
+    "warmup_calls_per_variant": 20,
+    "seed": 20261020,
+    "linear_coefficients": "exp((-0.2-0.7j)*(1+index/N)*h)",
+    "pump": "(0.125-0.375j)*h, added to the zero mode",
+    "single_call_check": {
+      "numpy_dtype": "complex128",
+      "rtol": 2e-06,
+      "atol": 2e-07
+    },
+    "repeated_formula_relative_l2_limit": 0.001,
+    "graph_vs_own_eager_check": {
+      "rtol": 1e-06,
+      "atol": 1e-07
+    }
+  },
+  "rows": [
+    {
+      "operator": "kerr_raman",
+      "N": 1024,
+      "calls_per_repeat": 1024,
+      "graph_replays_per_repeat": 16,
+      "samples_us_per_call": {
+        "torch_eager": [
+          424.01870019403987,
+          385.1006953112801,
+          460.85293750053324,
+          445.7455390607379,
+          334.5422109362062,
+          424.0655332026222,
+          423.57240820223296
+        ],
+        "triton_eager": [
+          257.1176748062953,
+          391.7312041039622,
+          256.6136689452492,
+          262.08790722392905,
+          256.55680664016245,
+          255.25151952621172,
+          257.02031835805883
+        ],
+        "torch_graph": [
+          31.106530272495547,
+          30.950986328548424,
+          31.005957033869436,
+          30.947864253505486,
+          30.851263673525864,
+          30.97435546806082,
+          30.972653320304744
+        ],
+        "triton_graph": [
+          12.445166987617995,
+          12.440719721951154,
+          12.401266602068972,
+          12.341091796486126,
+          12.477524414578056,
+          12.442422850256207,
+          12.430785155004287
+        ]
+      },
+      "median_us_per_call": {
+        "torch_eager": 424.01870019403987,
+        "triton_eager": 257.02031835805883,
+        "torch_graph": 30.972653320304744,
+        "triton_graph": 12.440719721951154
+      },
+      "formula_relative_l2": {
+        "torch_eager": 0.0003027861307497112,
+        "triton_eager": 0.0003033929647685171,
+        "torch_graph": 0.0003027861307497112,
+        "triton_graph": 0.0003033929647685171
+      }
+    },
+    {
+      "operator": "kerr_raman",
+      "N": 2048,
+      "calls_per_repeat": 1024,
+      "graph_replays_per_repeat": 16,
+      "samples_us_per_call": {
+        "torch_eager": [
+          429.8688574166931,
+          407.72258788734916,
+          391.508768558424,
+          337.6940058572586,
+          434.9024882799313,
+          486.7385039020178,
+          398.17893457438913
+        ],
+        "triton_eager": [
+          277.33623340253644,
+          339.19617675337577,
+          305.05168847838604,
+          270.6421718698948,
+          285.4233261686545,
+          292.9885165983137,
+          279.5113574265429
+        ],
+        "torch_graph": [
+          82.5978203096156,
+          31.957511716029785,
+          31.96699413621218,
+          53.36047070159111,
+          90.47478711465828,
+          49.20574511402265,
+          43.904811526829235
+        ],
+        "triton_graph": [
+          33.583331052966514,
+          13.249396481285203,
+          13.144238280915488,
+          13.00949706717347,
+          32.78606738632561,
+          20.121343752066423,
+          18.002069339217996
+        ]
+      },
+      "median_us_per_call": {
+        "torch_eager": 407.72258788734916,
+        "triton_eager": 285.4233261686545,
+        "torch_graph": 49.20574511402265,
+        "triton_graph": 18.002069339217996
+      },
+      "formula_relative_l2": {
+        "torch_eager": 0.0005518079227984536,
+        "triton_eager": 0.0005515711790140073,
+        "torch_graph": 0.0005518079227984536,
+        "triton_graph": 0.0005515711790140073
+      }
+    },
+    {
+      "operator": "kerr_raman",
+      "N": 4096,
+      "calls_per_repeat": 1024,
+      "graph_replays_per_repeat": 16,
+      "samples_us_per_call": {
+        "torch_eager": [
+          367.9885273442096,
+          472.0909550712804,
+          363.25185058672105,
+          378.3879111338706,
+          393.1530937464345,
+          318.47691992226146,
+          326.09319140419757
+        ],
+        "triton_eager": [
+          345.88891015374656,
+          335.32089258159203,
+          316.88458398093644,
+          255.36392676173136,
+          254.09000390652636,
+          285.59450976928247,
+          280.9813144537543
+        ],
+        "torch_graph": [
+          69.86226464533729,
+          55.83191308744517,
+          44.03898437033149,
+          38.484865228838316,
+          56.78469238290518,
+          41.66743945432927,
+          40.703537109720855
+        ],
+        "triton_graph": [
+          37.9855419936348,
+          25.75159472684163,
+          20.3472089879142,
+          17.67230565974387,
+          26.15762109314801,
+          19.252510746525786,
+          18.798288088817117
+        ]
+      },
+      "median_us_per_call": {
+        "torch_eager": 367.9885273442096,
+        "triton_eager": 285.59450976928247,
+        "torch_graph": 44.03898437033149,
+        "triton_graph": 20.3472089879142
+      },
+      "formula_relative_l2": {
+        "torch_eager": 0.0009627608307084507,
+        "triton_eager": 0.0009630368187466669,
+        "torch_graph": 0.0009627608307084507,
+        "triton_graph": 0.0009630368187466669
+      }
+    }
+  ]
+}

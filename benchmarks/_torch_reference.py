@@ -16,6 +16,21 @@ def torch_kerr_(angular: torch.Tensor, h: float) -> torch.Tensor:
     return angular
 
 
+def torch_kerr_raman_(angular: torch.Tensor, h: float, raman: float) -> torch.Tensor:
+    """Apply Kerr–Raman rotation with ordinary PyTorch operations and real FFTs."""
+    if raman == 0:
+        return torch_kerr_(angular, h)
+    intensity = angular.abs().square()
+    spectrum = torch.fft.rfft(intensity)
+    wavenumbers = torch.arange(spectrum.numel(), dtype=torch.float32, device=angular.device)
+    if angular.numel() % 2 == 0:
+        wavenumbers[-1].zero_()
+    spectrum.mul_(1j * wavenumbers)
+    derivative = torch.fft.irfft(spectrum, n=angular.numel())
+    angular.mul_(torch.exp(1j * h * (intensity - raman * derivative)))
+    return angular
+
+
 def torch_linear_and_pump_(
     spectrum: torch.Tensor, linear: torch.Tensor, pump: complex
 ) -> torch.Tensor:
