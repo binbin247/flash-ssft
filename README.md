@@ -4,11 +4,11 @@
 
 ## 性能结果
 
-在 GTX 1660 上，相同 GPU、`complex64` 精度且两边均启用 CUDA Graph 时，**Kerr 算子加速 9.16–9.35×，线性/泵浦算子加速 2.29–3.34×，完整仿真加速 1.88–2.32×**。
+在 GTX 1660 上，相同 GPU、`complex64` 精度且两边均启用 CUDA Graph 时，**Kerr 算子加速 9.16–9.35×，线性/泵浦算子加速 2.29–3.34×，Kerr–Raman 算子加速 2.16–2.73×，完整仿真加速 1.88–2.32×**。
 
 以下为当前实现的实测结果：PyTorch `2.13.0+cu126`、Triton `3.7.1`、CUDA `12.6`；预热后交替测量四种实现，取 **7 次中位数**。PyTorch 基线使用普通张量运算，未使用 `torch.compile`。
 
-### 融合算子
+### 算子性能汇总
 
 两边均使用 CUDA Graph，每次回放 64 次算子调用；每轮共 1,024 次调用。表中为摊销单次耗时，单位 **µs**。
 
@@ -16,12 +16,17 @@
 | --- | ---: | ---: | ---: | ---: |
 | Kerr | 1024 | 13.377 | 1.460 | **9.16×** |
 | 线性 + 泵浦 | 1024 | 3.087 | 1.237 | **2.50×** |
+| Kerr–Raman | 1024 | 30.973 | 12.441 | **2.49×** |
 | Kerr | 2048 | 13.441 | 1.463 | **9.19×** |
 | 线性 + 泵浦 | 2048 | 4.249 | 1.273 | **3.34×** |
+| Kerr–Raman | 2048 | 49.206 | 18.002 | **2.73×** |
 | Kerr | 4096 | 21.956 | 2.349 | **9.35×** |
 | 线性 + 泵浦 | 4096 | 4.827 | 2.110 | **2.29×** |
+| Kerr–Raman | 4096 | 44.039 | 20.347 | **2.16×** |
 
-计时包含主机提交与 GPU 执行，排除传输、输入恢复、编译、预热和建图。普通调用（eager）下，线性/泵浦算子此次测量未获得加速；四组完整数据及逐次样本见 [算子结果](results/benchmark_operators_current.json)，[性能曲线](results/benchmark_operators_current.png)。
+计时包含主机提交与 GPU 执行，排除传输、输入恢复、编译、预热和建图。Kerr–Raman 包含强度计算、RFFT/IRFFT、谱求导及相位更新，使用固定平滑周期初态，`h=0.005`、`raman=0.01`；其余两种算子使用随机复数初态。数据来自两轮独立测量，每行比较同一算子的 PyTorch/Triton 实现。
+
+普通调用（eager）下，线性/泵浦此次未获得加速，Kerr–Raman 加速 **1.29–1.65×**。连续调用的最大复场相对 L2 误差：Kerr 与线性/泵浦为 `1.11e-4`，Kerr–Raman 为 `9.64e-4`，均通过 `1e-3` 门槛及 Graph/eager 一致性检查。[Kerr、线性/泵浦数据](results/benchmark_operators_current.json) · [曲线](results/benchmark_operators_current.png)；[Kerr–Raman 数据](results/benchmark_kerr_raman.json) · [曲线](results/benchmark_kerr_raman.png)。
 
 ### 完整 LLE 仿真
 
@@ -35,19 +40,7 @@
 
 计时包含输入状态复制、完整循环、输出复制及同步，排除主机传输、系数准备、编译、预热和建图。Triton + Graph 相对 PyTorch eager 加速 **13.69–24.66×**，其中同时包含算子优化与图回放的收益。
 
-上述数值检查通过：算子连续调用相对解析公式的复场 L2 误差不超过 `1.11e-4`；完整循环的 PyTorch/Triton 及 Graph/eager 对照相对 L2 误差不超过 `3.03e-6`。[完整循环数据与测量配置](results/compare_implementations_current.json)记录了逐次耗时、误差及源码哈希。结果限于上述设备与规模；性能结论分别对应所链接的实测文件。
-
-### Kerr–Raman 独立算子
-
-同一 GTX 1660、`complex64`、7 次中位数；两边均用 Graph，每次回放 64 次，单轮共 1,024 次调用。`h=0.005`、`raman=0.01`，使用固定平滑周期初态；单位 **µs/次**，包含强度计算、RFFT/IRFFT、谱求导及相位更新。
-
-| 元素数 | PyTorch + Graph | Triton + Graph | 加速比 |
-| ---: | ---: | ---: | ---: |
-| 1024 | 30.973 | 12.441 | **2.49×** |
-| 2048 | 49.206 | 18.002 | **2.73×** |
-| 4096 | 44.039 | 20.347 | **2.16×** |
-
-eager 对照加速 **1.29–1.65×**。连续调用相对 NumPy `complex128` 谱方法参考的最大复场 L2 误差为 `9.64e-4`，通过 `1e-3` 门槛；Graph/eager 一致性检查通过。[四组逐次数据](results/benchmark_kerr_raman.json) · [性能曲线](results/benchmark_kerr_raman.png)。
+完整循环的 PyTorch/Triton 及 Graph/eager 对照相对 L2 误差不超过 `3.03e-6`。[完整循环数据与测量配置](results/compare_implementations_current.json)记录了逐次耗时、误差及源码哈希。结果限于上述设备与规模；性能结论分别对应所链接的实测文件。
 
 ## 优化实现
 
