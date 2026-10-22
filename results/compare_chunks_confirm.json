@@ -1,0 +1,576 @@
+{
+  "metadata": {
+    "started_utc": "2026-10-20T14:27:40.808416+00:00",
+    "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+    "torch": "2.13.0+cu126",
+    "triton": "3.7.1",
+    "numpy": "2.4.6",
+    "torch_cuda": "12.6",
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "gpu_snapshot_start": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 49, 0 %, 45 MiB, 300 MHz, P8",
+    "source_sha256": {
+      "src/flashlle/gpu.py": "eba9c069712d6013ae7e5550fd61ec317ecc1f178c602c142f0df94385d77d62",
+      "src/flashlle/operators.py": "ec4c02ec96246c3a6f5b433742186569de1a0084c4bbe32b0d93e07b5f4ce4cb",
+      "src/flashlle/model.py": "2cce903608f16c36e7f86001e0dd03618014f8179e74442a5a4dea1bd99e7513",
+      "benchmarks/compare_chunks.py": "4d00023449a3d83ed57f8c1e3c79c3d6640b243ad4a35ee9161a5371c382fbcd",
+      "benchmarks/compare_graph.py": "c0648b0c7ee51cbac9c97d457f636d7d7a8460c4b848076af750d5756acef592"
+    },
+    "finished_utc": "2026-10-20T14:28:47.310724+00:00",
+    "gpu_snapshot_end": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 53, 100 %, 144 MiB, 1965 MHz, P0"
+  },
+  "protocol": {
+    "repeats": 7,
+    "chunks": [
+      4,
+      16
+    ],
+    "steps": [
+      100000
+    ],
+    "timing": "perf_counter with CUDA synchronization before and after",
+    "setup": "CudaGraphStepper constructor; no replay; libraries already warm",
+    "cached": "public simulate_gpu call with a cached graph; host-to-host",
+    "memory": "PyTorch reserved-memory increase during constructor, after empty_cache; excludes allocations outside PyTorch allocator",
+    "accuracy_reference": "same solver with graph_chunk=16, previously checked against no_graph",
+    "ordering": "deterministically shuffled chunks each repeat",
+    "remainder": "actual steps % chunk eager steps are included"
+  },
+  "orders": [
+    {
+      "n_modes": 1024,
+      "repeat": 0,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 1,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 2,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 3,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 4,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 5,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 6,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 0,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 1,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 2,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 3,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 4,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 5,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 6,
+      "chunks": [
+        4,
+        16
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 0,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 1,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 2,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 3,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 4,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 5,
+      "chunks": [
+        16,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 6,
+      "chunks": [
+        16,
+        4
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "n_modes": 1024,
+      "chunk": 4,
+      "setup_seconds": [
+        0.00377129900152795,
+        0.003777597998123383,
+        0.0033639040011621546,
+        0.003022703996975906,
+        0.0034853979996114504,
+        0.002974998002173379,
+        0.003933005998987937
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.5056746150003164,
+            1.9789533099974506,
+            0.9561764099998982,
+            0.8865590160021384,
+            0.8775771459986572,
+            0.9230634049999935,
+            0.8814897939992079
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9230634049999935,
+          "min_seconds": 0.8775771459986572,
+          "max_seconds": 1.9789533099974506
+        }
+      ],
+      "setup_median_seconds": 0.0034853979996114504,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 16,
+      "setup_seconds": [
+        0.004785397002706304,
+        0.006174796999403043,
+        0.005180206000659382,
+        0.006027006998920115,
+        0.0050196970005345065,
+        0.005783196000265889,
+        0.005774910001491662
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.1471803519998502,
+            2.168263757001114,
+            1.0737329629992018,
+            0.9652364060020773,
+            0.9325808249996044,
+            1.0014730350012542,
+            1.0257599530013977
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0257599530013977,
+          "min_seconds": 0.9325808249996044,
+          "max_seconds": 2.168263757001114
+        }
+      ],
+      "setup_median_seconds": 0.005774910001491662,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 4,
+      "setup_seconds": [
+        0.003810498001257656,
+        0.0036895029988954775,
+        0.003901402000337839,
+        0.003058398997382028,
+        0.003841305002424633,
+        0.003442397999606328,
+        0.0032010989998525474
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            2.2074475420013187,
+            1.0193035359989153,
+            1.1485063800028001,
+            1.0374815680006577,
+            0.9698217810000642,
+            0.9680244429982849,
+            0.9693260290005128
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0193035359989153,
+          "min_seconds": 0.9680244429982849,
+          "max_seconds": 2.2074475420013187
+        }
+      ],
+      "setup_median_seconds": 0.0036895029988954775,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 16,
+      "setup_seconds": [
+        0.0056275970018759836,
+        0.00575050400220789,
+        0.005823997002153192,
+        0.005041598000389058,
+        0.0053433069988386706,
+        0.005038906001573196,
+        0.004894998000963824
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.51245624099829,
+            1.4843840989997261,
+            1.224995469001442,
+            1.026108138001291,
+            1.02634466499876,
+            1.026612006000505,
+            1.6704601290002756
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.224995469001442,
+          "min_seconds": 1.026108138001291,
+          "max_seconds": 1.6704601290002756
+        }
+      ],
+      "setup_median_seconds": 0.0053433069988386706,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 4,
+      "setup_seconds": [
+        0.0030243009969126433,
+        0.0030564990011043847,
+        0.002945800999441417,
+        0.003237298999010818,
+        0.00294740100071067,
+        0.0030749999968975317,
+        0.0027864990006492008
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.3388884109990613,
+            2.3009566870023264,
+            1.3407678170005966,
+            1.3392976570030442,
+            2.086712713997258,
+            1.3402426289976574,
+            1.3800614989995665
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.3407678170005966,
+          "min_seconds": 1.3388884109990613,
+          "max_seconds": 2.3009566870023264
+        }
+      ],
+      "setup_median_seconds": 0.0030243009969126433,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 16,
+      "setup_seconds": [
+        0.0047921000004862435,
+        0.004836600000999169,
+        0.004915302000881638,
+        0.004991901998437243,
+        0.005029096999351168,
+        0.004977700999006629,
+        0.0048474970026290976
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.6287443490000442,
+            1.4950029390020063,
+            1.4592875920025108,
+            1.8094204549997812,
+            1.5652044150010624,
+            1.8963136340025812,
+            1.5955879169996479
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.5955879169996479,
+          "min_seconds": 1.4592875920025108,
+          "max_seconds": 1.8963136340025812
+        }
+      ],
+      "setup_median_seconds": 0.004915302000881638,
+      "graph_reserved_median_bytes": 4194304
+    }
+  ]
+}

@@ -1,0 +1,2264 @@
+{
+  "metadata": {
+    "started_utc": "2026-10-20T14:25:25.884988+00:00",
+    "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+    "torch": "2.13.0+cu126",
+    "triton": "3.7.1",
+    "numpy": "2.4.6",
+    "torch_cuda": "12.6",
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "gpu_snapshot_start": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 47, 0 %, 45 MiB, 300 MHz, P8",
+    "source_sha256": {
+      "src/flashlle/gpu.py": "eba9c069712d6013ae7e5550fd61ec317ecc1f178c602c142f0df94385d77d62",
+      "src/flashlle/operators.py": "ec4c02ec96246c3a6f5b433742186569de1a0084c4bbe32b0d93e07b5f4ce4cb",
+      "src/flashlle/model.py": "2cce903608f16c36e7f86001e0dd03618014f8179e74442a5a4dea1bd99e7513",
+      "benchmarks/compare_chunks.py": "4d00023449a3d83ed57f8c1e3c79c3d6640b243ad4a35ee9161a5371c382fbcd",
+      "benchmarks/compare_graph.py": "c0648b0c7ee51cbac9c97d457f636d7d7a8460c4b848076af750d5756acef592"
+    },
+    "finished_utc": "2026-10-20T14:27:17.811835+00:00",
+    "gpu_snapshot_end": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 53, 85 %, 158 MiB, 1965 MHz, P0"
+  },
+  "protocol": {
+    "repeats": 3,
+    "chunks": [
+      1,
+      4,
+      16,
+      32,
+      64,
+      100,
+      128,
+      256
+    ],
+    "steps": [
+      1000,
+      10000,
+      100000
+    ],
+    "timing": "perf_counter with CUDA synchronization before and after",
+    "setup": "CudaGraphStepper constructor; no replay; libraries already warm",
+    "cached": "public simulate_gpu call with a cached graph; host-to-host",
+    "memory": "PyTorch reserved-memory increase during constructor, after empty_cache; excludes allocations outside PyTorch allocator",
+    "accuracy_reference": "same solver with graph_chunk=16, previously checked against no_graph",
+    "ordering": "deterministically shuffled chunks each repeat",
+    "remainder": "actual steps % chunk eager steps are included"
+  },
+  "orders": [
+    {
+      "n_modes": 1024,
+      "repeat": 0,
+      "chunks": [
+        64,
+        1,
+        32,
+        4,
+        16,
+        128,
+        100,
+        256
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 1,
+      "chunks": [
+        100,
+        64,
+        32,
+        16,
+        128,
+        4,
+        1,
+        256
+      ]
+    },
+    {
+      "n_modes": 1024,
+      "repeat": 2,
+      "chunks": [
+        100,
+        64,
+        16,
+        128,
+        1,
+        32,
+        256,
+        4
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 0,
+      "chunks": [
+        32,
+        64,
+        256,
+        100,
+        4,
+        128,
+        1,
+        16
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 1,
+      "chunks": [
+        64,
+        1,
+        100,
+        128,
+        4,
+        16,
+        32,
+        256
+      ]
+    },
+    {
+      "n_modes": 2048,
+      "repeat": 2,
+      "chunks": [
+        256,
+        32,
+        16,
+        64,
+        1,
+        4,
+        128,
+        100
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 0,
+      "chunks": [
+        64,
+        1,
+        100,
+        128,
+        16,
+        32,
+        4,
+        256
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 1,
+      "chunks": [
+        32,
+        64,
+        100,
+        256,
+        128,
+        16,
+        1,
+        4
+      ]
+    },
+    {
+      "n_modes": 4096,
+      "repeat": 2,
+      "chunks": [
+        64,
+        256,
+        16,
+        32,
+        1,
+        4,
+        100,
+        128
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "n_modes": 1024,
+      "chunk": 1,
+      "setup_seconds": [
+        0.0034116979986720253,
+        0.002291900000273017,
+        0.002562099998613121
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.009657493999839062,
+            0.00957159999961732,
+            0.009565202999510802
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.00957159999961732,
+          "min_seconds": 0.009565202999510802,
+          "max_seconds": 0.009657493999839062
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.09447414299938828,
+            0.09274969899706775,
+            0.09274632999949972
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.09274969899706775,
+          "min_seconds": 0.09274632999949972,
+          "max_seconds": 0.09447414299938828
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9889706020003359,
+            0.9191575909972016,
+            0.9164950880003744
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9191575909972016,
+          "min_seconds": 0.9164950880003744,
+          "max_seconds": 0.9889706020003359
+        }
+      ],
+      "setup_median_seconds": 0.002562099998613121,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 4,
+      "setup_seconds": [
+        0.003756898000574438,
+        0.0029365999980655033,
+        0.0032606979984848294
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.009014694001962198,
+            0.0091141000011703,
+            0.009008294997329358
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.009014694001962198,
+          "min_seconds": 0.009008294997329358,
+          "max_seconds": 0.0091141000011703
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.20893626600081916,
+            0.0884892009999021,
+            0.08877234999818029
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.08877234999818029,
+          "min_seconds": 0.0884892009999021,
+          "max_seconds": 0.20893626600081916
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9678971709981852,
+            0.8801741079987551,
+            0.8749314080014301
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.8801741079987551,
+          "min_seconds": 0.8749314080014301,
+          "max_seconds": 0.9678971709981852
+        }
+      ],
+      "setup_median_seconds": 0.0032606979984848294,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 16,
+      "setup_seconds": [
+        0.004755697002110537,
+        0.004920699997455813,
+        0.0046816009999020025
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.009980092996556778,
+            0.010191900997597259,
+            0.009946704001777107
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.009980092996556778,
+          "min_seconds": 0.009946704001777107,
+          "max_seconds": 0.010191900997597259
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.09377797599881887,
+            0.09392670600209385,
+            0.09368303399969591
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.09377797599881887,
+          "min_seconds": 0.09368303399969591,
+          "max_seconds": 0.09392670600209385
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9322667180022108,
+            0.932898845996533,
+            0.9327265319989237
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9327265319989237,
+          "min_seconds": 0.9322667180022108,
+          "max_seconds": 0.932898845996533
+        }
+      ],
+      "setup_median_seconds": 0.004755697002110537,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 32,
+      "setup_seconds": [
+        0.007408295998175163,
+        0.007472196000890108,
+        0.0074809020006796345
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.01894078799887211,
+            0.009988795001845574,
+            0.010077803002786823
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.010077803002786823,
+          "min_seconds": 0.009988795001845574,
+          "max_seconds": 0.01894078799887211
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.0938238420021662,
+            0.09403425100026652,
+            0.0937411279992375
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.0938238420021662,
+          "min_seconds": 0.0937411279992375,
+          "max_seconds": 0.09403425100026652
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9278150190002634,
+            0.9282842270004039,
+            1.1650442430000112
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9282842270004039,
+          "min_seconds": 0.9278150190002634,
+          "max_seconds": 1.1650442430000112
+        }
+      ],
+      "setup_median_seconds": 0.007472196000890108,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 64,
+      "setup_seconds": [
+        0.015161721999902511,
+        0.012674194000283023,
+        0.012989393002499128
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 40,
+          "repeat_seconds": [
+            0.012955492999026319,
+            0.012290994000068167,
+            0.01213709300282062
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.012290994000068167,
+          "min_seconds": 0.01213709300282062,
+          "max_seconds": 0.012955492999026319
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.09376864500154625,
+            0.093781953000871,
+            0.09370845100056613
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.09376864500154625,
+          "min_seconds": 0.09370845100056613,
+          "max_seconds": 0.093781953000871
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            0.9285478589990817,
+            0.9285970269993413,
+            0.928142556000239
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9285478589990817,
+          "min_seconds": 0.928142556000239,
+          "max_seconds": 0.9285970269993413
+        }
+      ],
+      "setup_median_seconds": 0.012989393002499128,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 100,
+      "setup_seconds": [
+        0.01818859300328768,
+        0.018943990999105154,
+        0.01886289100002614
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.009740895002323668,
+            0.009693595999124227,
+            0.009799794999707956
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.009740895002323668,
+          "min_seconds": 0.009693595999124227,
+          "max_seconds": 0.009799794999707956
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.09315265899931546,
+            0.09305615600169403,
+            0.09318045299733058
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.09315265899931546,
+          "min_seconds": 0.09305615600169403,
+          "max_seconds": 0.09318045299733058
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9256177899987961,
+            0.926331847000256,
+            0.9259812150012294
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9259812150012294,
+          "min_seconds": 0.9256177899987961,
+          "max_seconds": 0.926331847000256
+        }
+      ],
+      "setup_median_seconds": 0.01886289100002614,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 128,
+      "setup_seconds": [
+        0.025057186001504306,
+        0.023161101002187934,
+        0.023521107003034558
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 104,
+          "repeat_seconds": [
+            0.027513295000971993,
+            0.026632200999301858,
+            0.026208007999230176
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.026632200999301858,
+          "min_seconds": 0.026208007999230176,
+          "max_seconds": 0.027513295000971993
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.09375102299964055,
+            0.09354160300063086,
+            0.09359103200040408
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.09359103200040408,
+          "min_seconds": 0.09354160300063086,
+          "max_seconds": 0.09375102299964055
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            0.9275563439987309,
+            0.9276406270000734,
+            0.9272387099990738
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9275563439987309,
+          "min_seconds": 0.9272387099990738,
+          "max_seconds": 0.9276406270000734
+        }
+      ],
+      "setup_median_seconds": 0.023521107003034558,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 1024,
+      "chunk": 256,
+      "setup_seconds": [
+        0.05393477599864127,
+        0.043606699000520166,
+        0.04469937599787954
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 232,
+          "repeat_seconds": [
+            0.05514087399933487,
+            0.05598029799875803,
+            0.07913055899916799
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.05598029799875803,
+          "min_seconds": 0.05514087399933487,
+          "max_seconds": 0.07913055899916799
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.0951610560005065,
+            0.0953564980009105,
+            0.09490055000060238
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.0951610560005065,
+          "min_seconds": 0.09490055000060238,
+          "max_seconds": 0.0953564980009105
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 160,
+          "repeat_seconds": [
+            0.9643583499964734,
+            0.9604225789989869,
+            0.9627102769991325
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.9627102769991325,
+          "min_seconds": 0.9604225789989869,
+          "max_seconds": 0.9643583499964734
+        }
+      ],
+      "setup_median_seconds": 0.04469937599787954,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 1,
+      "setup_seconds": [
+        0.0023153009969973937,
+        0.0028269989998079836,
+        0.0026145010015170556
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.010687706999306101,
+            0.061505469002440805,
+            0.010470005003298866
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.010687706999306101,
+          "min_seconds": 0.010470005003298866,
+          "max_seconds": 0.061505469002440805
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.10222646500187693,
+            0.13723412999752327,
+            0.10236244299812824
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.10236244299812824,
+          "min_seconds": 0.10222646500187693,
+          "max_seconds": 0.13723412999752327
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.0132734409999102,
+            1.015158476002398,
+            1.0156021190014144
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.015158476002398,
+          "min_seconds": 1.0132734409999102,
+          "max_seconds": 1.0156021190014144
+        }
+      ],
+      "setup_median_seconds": 0.0026145010015170556,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 4,
+      "setup_seconds": [
+        0.0029419979982776567,
+        0.003197500998794567,
+        0.003850001001410419
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.050820773001760244,
+            0.010125005999725545,
+            0.012971092997759115
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.012971092997759115,
+          "min_seconds": 0.010125005999725545,
+          "max_seconds": 0.050820773001760244
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.13974862299801316,
+            0.0985194569984742,
+            0.21391129100084072
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13974862299801316,
+          "min_seconds": 0.0985194569984742,
+          "max_seconds": 0.21391129100084072
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.9655255639991083,
+            1.0226648860007117,
+            1.1113336179987527
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0226648860007117,
+          "min_seconds": 0.9655255639991083,
+          "max_seconds": 1.1113336179987527
+        }
+      ],
+      "setup_median_seconds": 0.003197500998794567,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 16,
+      "setup_seconds": [
+        0.004759603001730284,
+        0.005315403002896346,
+        0.004659802001697244
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.010994207001203904,
+            0.010901106001256267,
+            0.010966904999804683
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.010966904999804683,
+          "min_seconds": 0.010901106001256267,
+          "max_seconds": 0.010994207001203904
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.10297036400152138,
+            0.1032527579991438,
+            0.10317434699754813
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.10317434699754813,
+          "min_seconds": 0.10297036400152138,
+          "max_seconds": 0.1032527579991438
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.0247595260007074,
+            1.0266129660012666,
+            1.0259586649990524
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0259586649990524,
+          "min_seconds": 1.0247595260007074,
+          "max_seconds": 1.0266129660012666
+        }
+      ],
+      "setup_median_seconds": 0.004759603001730284,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 32,
+      "setup_seconds": [
+        0.007168406998971477,
+        0.007489304000046104,
+        0.007894595997640863
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.01083481000023312,
+            0.011085805999755394,
+            0.01095709400033229
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.01095709400033229,
+          "min_seconds": 0.01083481000023312,
+          "max_seconds": 0.011085805999755394
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.10315519700088771,
+            0.14951428099811892,
+            0.10334714399868972
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.10334714399868972,
+          "min_seconds": 0.10315519700088771,
+          "max_seconds": 0.14951428099811892
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.022591550998186,
+            1.1361754040008236,
+            1.0224699089994829
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.022591550998186,
+          "min_seconds": 1.0224699089994829,
+          "max_seconds": 1.1361754040008236
+        }
+      ],
+      "setup_median_seconds": 0.007489304000046104,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 64,
+      "setup_seconds": [
+        0.012326711999776307,
+        0.01222680699720513,
+        0.013141206000000238
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 40,
+          "repeat_seconds": [
+            0.013123811997502344,
+            0.013413208998827031,
+            0.012867804998677457
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.013123811997502344,
+          "min_seconds": 0.012867804998677457,
+          "max_seconds": 0.013413208998827031
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.10282619500139845,
+            0.10318086199913523,
+            0.10332464599923696
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.10318086199913523,
+          "min_seconds": 0.10282619500139845,
+          "max_seconds": 0.10332464599923696
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            1.3119295539981977,
+            1.022004498001479,
+            1.023042541997711
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.023042541997711,
+          "min_seconds": 1.022004498001479,
+          "max_seconds": 1.3119295539981977
+        }
+      ],
+      "setup_median_seconds": 0.012326711999776307,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 100,
+      "setup_seconds": [
+        0.018774591000692453,
+        0.018524690000049304,
+        0.019796289001533296
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.01063529400198604,
+            0.037352380000811536,
+            0.01061589399978402
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.01063529400198604,
+          "min_seconds": 0.01061589399978402,
+          "max_seconds": 0.037352380000811536
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.10248144700017292,
+            0.16027071599819465,
+            0.13661172399952193
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13661172399952193,
+          "min_seconds": 0.10248144700017292,
+          "max_seconds": 0.16027071599819465
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.0202968560006411,
+            1.0395162400018307,
+            1.3145376040010888
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0395162400018307,
+          "min_seconds": 1.0202968560006411,
+          "max_seconds": 1.3145376040010888
+        }
+      ],
+      "setup_median_seconds": 0.018774591000692453,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 128,
+      "setup_seconds": [
+        0.022363187999872025,
+        0.025348186001792783,
+        0.02405718700174475
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 104,
+          "repeat_seconds": [
+            0.026615085000230465,
+            0.100825645000441,
+            0.02946378400156391
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.02946378400156391,
+          "min_seconds": 0.026615085000230465,
+          "max_seconds": 0.100825645000441
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.10276274100033334,
+            0.1027931440003158,
+            0.10309794500062708
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.1027931440003158,
+          "min_seconds": 0.10276274100033334,
+          "max_seconds": 0.10309794500062708
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            1.0210666460006905,
+            1.0214820869987307,
+            1.0215106420000666
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0214820869987307,
+          "min_seconds": 1.0210666460006905,
+          "max_seconds": 1.0215106420000666
+        }
+      ],
+      "setup_median_seconds": 0.02405718700174475,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 2048,
+      "chunk": 256,
+      "setup_seconds": [
+        0.045418076999339974,
+        0.046729376997973304,
+        0.049717173002136406
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 232,
+          "repeat_seconds": [
+            0.05564837199926842,
+            0.07019516400032444,
+            0.056490670001949184
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.056490670001949184,
+          "min_seconds": 0.05564837199926842,
+          "max_seconds": 0.07019516400032444
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.10470534799969755,
+            0.16581681500247214,
+            0.104815744998632
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.104815744998632,
+          "min_seconds": 0.10470534799969755,
+          "max_seconds": 0.16581681500247214
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 160,
+          "repeat_seconds": [
+            1.0570599599996058,
+            1.0577821509978094,
+            1.0576237259992922
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.0576237259992922,
+          "min_seconds": 1.0570599599996058,
+          "max_seconds": 1.0577821509978094
+        }
+      ],
+      "setup_median_seconds": 0.046729376997973304,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 1,
+      "setup_seconds": [
+        0.0025253990024793893,
+        0.0026764989997900557,
+        0.002443901998049114
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.01403919299991685,
+            0.013986392998049268,
+            0.014090811000642134
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.01403919299991685,
+          "min_seconds": 0.013986392998049268,
+          "max_seconds": 0.014090811000642134
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.1373324300002423,
+            0.1368756289994053,
+            0.13684200799980317
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.1368756289994053,
+          "min_seconds": 0.13684200799980317,
+          "max_seconds": 0.1373324300002423
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.3687397870016866,
+            1.7675512550013082,
+            1.9224341919980361
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.7675512550013082,
+          "min_seconds": 1.3687397870016866,
+          "max_seconds": 1.9224341919980361
+        }
+      ],
+      "setup_median_seconds": 0.0025253990024793893,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 4,
+      "setup_seconds": [
+        0.0034951979978359304,
+        0.002835297997080488,
+        0.0029521020005631726
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.013648792999447323,
+            0.013689491999684833,
+            0.013687311002286151
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.013687311002286151,
+          "min_seconds": 0.013648792999447323,
+          "max_seconds": 0.013689491999684833
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.13380922699798248,
+            0.23226077199797146,
+            0.1335460010013776
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13380922699798248,
+          "min_seconds": 0.1335460010013776,
+          "max_seconds": 0.23226077199797146
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.476662874003523,
+            1.3285398089974478,
+            1.408231560002605
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.408231560002605,
+          "min_seconds": 1.3285398089974478,
+          "max_seconds": 1.476662874003523
+        }
+      ],
+      "setup_median_seconds": 0.0029521020005631726,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 16,
+      "setup_seconds": [
+        0.005803801002912223,
+        0.005130902001837967,
+        0.004973798000719398
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.014227303996449336,
+            0.014271008003561292,
+            0.014185692998580635
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.014227303996449336,
+          "min_seconds": 0.014185692998580635,
+          "max_seconds": 0.014271008003561292
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.1370604399999138,
+            0.13719157200102927,
+            0.1746193110011518
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13719157200102927,
+          "min_seconds": 0.1370604399999138,
+          "max_seconds": 0.1746193110011518
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.648540950998722,
+            1.3671221999975387,
+            1.8019025629982934
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.648540950998722,
+          "min_seconds": 1.3671221999975387,
+          "max_seconds": 1.8019025629982934
+        }
+      ],
+      "setup_median_seconds": 0.005130902001837967,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 32,
+      "setup_seconds": [
+        0.008142901999235619,
+        0.008909505999326939,
+        0.007632595999893965
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 8,
+          "repeat_seconds": [
+            0.04042781099997228,
+            0.026465520000783727,
+            0.014491992002149345
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.026465520000783727,
+          "min_seconds": 0.014491992002149345,
+          "max_seconds": 0.04042781099997228
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.15494593999756034,
+            0.13729740000053425,
+            0.13743272600186174
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13743272600186174,
+          "min_seconds": 0.13729740000053425,
+          "max_seconds": 0.15494593999756034
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.6614656790006848,
+            1.642412872002751,
+            1.4739533249994565
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.642412872002751,
+          "min_seconds": 1.4739533249994565,
+          "max_seconds": 1.6614656790006848
+        }
+      ],
+      "setup_median_seconds": 0.008142901999235619,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 64,
+      "setup_seconds": [
+        0.013199711000197567,
+        0.014035393000085605,
+        0.012411109000822762
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 40,
+          "repeat_seconds": [
+            0.015431712999998126,
+            0.017439191000448773,
+            0.014989710001827916
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.015431712999998126,
+          "min_seconds": 0.014989710001827916,
+          "max_seconds": 0.017439191000448773
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.15864972999770544,
+            0.15533302100084256,
+            0.13712279600076727
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.15533302100084256,
+          "min_seconds": 0.13712279600076727,
+          "max_seconds": 0.15864972999770544
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            1.5193215500003134,
+            1.535345200001757,
+            1.655094552999799
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.535345200001757,
+          "min_seconds": 1.5193215500003134,
+          "max_seconds": 1.655094552999799
+        }
+      ],
+      "setup_median_seconds": 0.013199711000197567,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 100,
+      "setup_seconds": [
+        0.01911838899832219,
+        0.0185986899996351,
+        0.01838339100140729
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.014048592998733511,
+            0.01407989200015436,
+            0.014117193000856787
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.01407989200015436,
+          "min_seconds": 0.014048592998733511,
+          "max_seconds": 0.014117193000856787
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            0.1367814270015515,
+            0.15451421699981438,
+            0.21291309599837405
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.15451421699981438,
+          "min_seconds": 0.1367814270015515,
+          "max_seconds": 0.21291309599837405
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 0,
+          "repeat_seconds": [
+            1.8117520019986841,
+            1.624094906001119,
+            1.6787561569981335
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.6787561569981335,
+          "min_seconds": 1.624094906001119,
+          "max_seconds": 1.8117520019986841
+        }
+      ],
+      "setup_median_seconds": 0.0185986899996351,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 128,
+      "setup_seconds": [
+        0.023291385998163605,
+        0.02386521299922606,
+        0.024445587001537206
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 104,
+          "repeat_seconds": [
+            0.026598385000397684,
+            0.02749521499936236,
+            0.02806578600211651
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.02749521499936236,
+          "min_seconds": 0.026598385000397684,
+          "max_seconds": 0.02806578600211651
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.13707943899862585,
+            0.13700247400265653,
+            0.13699972800168325
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.13700247400265653,
+          "min_seconds": 0.13699972800168325,
+          "max_seconds": 0.13707943899862585
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 32,
+          "repeat_seconds": [
+            1.5976078849998885,
+            1.5843842510003014,
+            1.6651146129988774
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.5976078849998885,
+          "min_seconds": 1.5843842510003014,
+          "max_seconds": 1.6651146129988774
+        }
+      ],
+      "setup_median_seconds": 0.02386521299922606,
+      "graph_reserved_median_bytes": 4194304
+    },
+    {
+      "n_modes": 4096,
+      "chunk": 256,
+      "setup_seconds": [
+        0.04498957400210202,
+        0.043873275000805734,
+        0.044282429000304546
+      ],
+      "graph_reserved_bytes": [
+        4194304,
+        4194304,
+        4194304
+      ],
+      "runs": [
+        {
+          "steps": 1000,
+          "graph_active": true,
+          "eager_remainder_steps": 232,
+          "repeat_seconds": [
+            0.05747156600045855,
+            0.11469803499858244,
+            0.0587381400000595
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.0587381400000595,
+          "min_seconds": 0.05747156600045855,
+          "max_seconds": 0.11469803499858244
+        },
+        {
+          "steps": 10000,
+          "graph_active": true,
+          "eager_remainder_steps": 16,
+          "repeat_seconds": [
+            0.16459470499830786,
+            0.15134411300095962,
+            0.1646559110013186
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 0.16459470499830786,
+          "min_seconds": 0.15134411300095962,
+          "max_seconds": 0.1646559110013186
+        },
+        {
+          "steps": 100000,
+          "graph_active": true,
+          "eager_remainder_steps": 160,
+          "repeat_seconds": [
+            1.8561005599985947,
+            1.4148482710006647,
+            1.7759077459995751
+          ],
+          "exact_output_matches": [
+            true,
+            true,
+            true
+          ],
+          "relative_l2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "median_seconds": 1.7759077459995751,
+          "min_seconds": 1.4148482710006647,
+          "max_seconds": 1.8561005599985947
+        }
+      ],
+      "setup_median_seconds": 0.044282429000304546,
+      "graph_reserved_median_bytes": 4194304
+    }
+  ]
+}

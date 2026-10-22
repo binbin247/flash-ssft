@@ -1,0 +1,296 @@
+{
+  "metadata": {
+    "timestamp_utc": "2026-10-20T10:37:01.734001+00:00",
+    "hostname": "DESKTOP-QSA0U55",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.11.17",
+    "numpy": "2.4.6",
+    "torch": "2.13.0+cu126",
+    "triton": "3.7.1",
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "gpu_compute_capability": [
+      7,
+      5
+    ],
+    "torch_cuda": "12.6"
+  },
+  "parameters": {
+    "pump_f": 2.5,
+    "detuning_alpha": 5.0,
+    "d2": 0.02,
+    "dtau": 0.005,
+    "d3": 0.0
+  },
+  "protocol": {
+    "input_and_output": "host angular-domain complex field",
+    "first_call": "recorded separately; can include initialization, compilation, graph capture",
+    "warm_repeats": 3,
+    "extra_warmups": 0,
+    "graph_chunk": 16,
+    "gpu_dtype": "complex64",
+    "numpy_dtype": "complex128"
+  },
+  "rows": [
+    {
+      "n_modes": 1024,
+      "steps": 1000,
+      "backend": "numpy",
+      "first_call_seconds": 0.06194478399993386,
+      "repeat_seconds": [
+        0.06179048299964052,
+        0.0574469749990385,
+        0.05535546799910662
+      ],
+      "median_seconds": 0.0574469749990385
+    },
+    {
+      "n_modes": 1024,
+      "steps": 1000,
+      "backend": "gpu",
+      "first_call_seconds": 1.0274949930008006,
+      "repeat_seconds": [
+        0.012944531001267023,
+        0.012657131999731064,
+        0.012658432000534958
+      ],
+      "median_seconds": 0.012658432000534958,
+      "speedup_vs_numpy": 4.538237832032493,
+      "field_relative_l2": 0.0001329322643818063,
+      "mean_power": 0.39980831078359924,
+      "mean_power_relative_error": 6.518238688013088e-06,
+      "power_spectrum_relative_l2": 2.1684706217344662e-05
+    },
+    {
+      "n_modes": 1024,
+      "steps": 10000,
+      "backend": "numpy",
+      "first_call_seconds": 0.631990940999458,
+      "repeat_seconds": [
+        0.5820618350007862,
+        0.6012743669998599,
+        0.5650679539994599
+      ],
+      "median_seconds": 0.5820618350007862
+    },
+    {
+      "n_modes": 1024,
+      "steps": 10000,
+      "backend": "gpu",
+      "first_call_seconds": 0.11954939200040826,
+      "repeat_seconds": [
+        0.09376022899959935,
+        0.16443810199962172,
+        0.09351692800009914
+      ],
+      "median_seconds": 0.09376022899959935,
+      "speedup_vs_numpy": 6.207982224566383,
+      "field_relative_l2": 0.00132424549037012,
+      "mean_power": 0.39951719398066393,
+      "mean_power_relative_error": 1.4712714340616068e-06,
+      "power_spectrum_relative_l2": 1.3430274739226148e-05
+    },
+    {
+      "n_modes": 1024,
+      "steps": 100000,
+      "backend": "numpy",
+      "first_call_seconds": 5.96398413299903,
+      "repeat_seconds": [
+        5.8274750689997745,
+        5.779754959999991,
+        5.839557841998612
+      ],
+      "median_seconds": 5.8274750689997745
+    },
+    {
+      "n_modes": 1024,
+      "steps": 100000,
+      "backend": "gpu",
+      "first_call_seconds": 1.156951097998899,
+      "repeat_seconds": [
+        0.9275938480004697,
+        0.927428887998758,
+        0.9271300290001818
+      ],
+      "median_seconds": 0.927428887998758,
+      "speedup_vs_numpy": 6.283473745975852,
+      "field_relative_l2": 0.013233456434028412,
+      "mean_power": 0.39951759880659776,
+      "mean_power_relative_error": 2.4812009070548065e-06,
+      "power_spectrum_relative_l2": 1.3331552403507314e-05
+    },
+    {
+      "n_modes": 2048,
+      "steps": 1000,
+      "backend": "numpy",
+      "first_call_seconds": 0.1113598110005114,
+      "repeat_seconds": [
+        0.1078595580002002,
+        0.10887115399964387,
+        0.10767655800009379
+      ],
+      "median_seconds": 0.1078595580002002
+    },
+    {
+      "n_modes": 2048,
+      "steps": 1000,
+      "backend": "gpu",
+      "first_call_seconds": 0.051900336000471725,
+      "repeat_seconds": [
+        0.011019465999197564,
+        0.010973066000588005,
+        0.04335816400089243
+      ],
+      "median_seconds": 0.011019465999197564,
+      "speedup_vs_numpy": 9.788092999066789,
+      "field_relative_l2": 0.0001196810328719108,
+      "mean_power": 0.39980825223767624,
+      "mean_power_relative_error": 6.37180274989033e-06,
+      "power_spectrum_relative_l2": 2.170529480072843e-05
+    },
+    {
+      "n_modes": 2048,
+      "steps": 10000,
+      "backend": "numpy",
+      "first_call_seconds": 1.03199617700011,
+      "repeat_seconds": [
+        1.026707841998359,
+        1.0025363349996042,
+        1.0008702269988135
+      ],
+      "median_seconds": 1.0025363349996042
+    },
+    {
+      "n_modes": 2048,
+      "steps": 10000,
+      "backend": "gpu",
+      "first_call_seconds": 0.4552524059999996,
+      "repeat_seconds": [
+        0.11393187899921031,
+        0.10756117200071458,
+        0.10272476399950392
+      ],
+      "median_seconds": 0.10756117200071458,
+      "speedup_vs_numpy": 9.320615574855802,
+      "field_relative_l2": 0.001177296007272643,
+      "mean_power": 0.3995173383205353,
+      "mean_power_relative_error": 1.8325577229547209e-06,
+      "power_spectrum_relative_l2": 1.332952252750234e-05
+    },
+    {
+      "n_modes": 2048,
+      "steps": 100000,
+      "backend": "numpy",
+      "first_call_seconds": 10.168048303001342,
+      "repeat_seconds": [
+        10.232921586000884,
+        10.01089845000024,
+        10.194649785000365
+      ],
+      "median_seconds": 10.194649785000365
+    },
+    {
+      "n_modes": 2048,
+      "steps": 100000,
+      "backend": "gpu",
+      "first_call_seconds": 1.6548479469984159,
+      "repeat_seconds": [
+        1.6312036010003794,
+        1.02078223999888,
+        1.5828521429993998
+      ],
+      "median_seconds": 1.5828521429993998,
+      "speedup_vs_numpy": 6.440683566111349,
+      "field_relative_l2": 0.011707639580657318,
+      "mean_power": 0.39951741148037495,
+      "mean_power_relative_error": 2.0123187166637764e-06,
+      "power_spectrum_relative_l2": 1.328289255933641e-05
+    },
+    {
+      "n_modes": 4096,
+      "steps": 1000,
+      "backend": "numpy",
+      "first_call_seconds": 0.1841591470001731,
+      "repeat_seconds": [
+        0.18144304499946884,
+        0.18272034599976905,
+        0.1961065569994389
+      ],
+      "median_seconds": 0.18272034599976905
+    },
+    {
+      "n_modes": 4096,
+      "steps": 1000,
+      "backend": "gpu",
+      "first_call_seconds": 0.023962319999554893,
+      "repeat_seconds": [
+        0.014494311999442289,
+        0.01444081199952052,
+        0.04645693800011941
+      ],
+      "median_seconds": 0.014494311999442289,
+      "speedup_vs_numpy": 12.606348339044983,
+      "field_relative_l2": 0.00011312194749890055,
+      "mean_power": 0.3998077941843235,
+      "mean_power_relative_error": 5.226112866664504e-06,
+      "power_spectrum_relative_l2": 1.7405756364557954e-05
+    },
+    {
+      "n_modes": 4096,
+      "steps": 10000,
+      "backend": "numpy",
+      "first_call_seconds": 1.8915172759989218,
+      "repeat_seconds": [
+        1.8344559359993582,
+        1.8511134119999042,
+        1.8167412050006533
+      ],
+      "median_seconds": 1.8344559359993582
+    },
+    {
+      "n_modes": 4096,
+      "steps": 10000,
+      "backend": "gpu",
+      "first_call_seconds": 0.35289464100060286,
+      "repeat_seconds": [
+        0.14069689700045274,
+        0.14394200000060664,
+        0.17134081800031709
+      ],
+      "median_seconds": 0.14394200000060664,
+      "speedup_vs_numpy": 12.744410498614906,
+      "field_relative_l2": 0.0011331853414222018,
+      "mean_power": 0.3995177867499473,
+      "mean_power_relative_error": 2.95498769289698e-06,
+      "power_spectrum_relative_l2": 1.3029882705657278e-05
+    },
+    {
+      "n_modes": 4096,
+      "steps": 100000,
+      "backend": "numpy",
+      "first_call_seconds": 18.163525758000105,
+      "repeat_seconds": [
+        18.110646815999644,
+        18.083177054999396,
+        17.912469797000085
+      ],
+      "median_seconds": 18.083177054999396
+    },
+    {
+      "n_modes": 4096,
+      "steps": 100000,
+      "backend": "gpu",
+      "first_call_seconds": 2.121712660000412,
+      "repeat_seconds": [
+        1.8543867980006326,
+        1.6610750820000248,
+        1.7837034329986636
+      ],
+      "median_seconds": 1.7837034329986636,
+      "speedup_vs_numpy": 10.13799531943433,
+      "field_relative_l2": 0.011255892421262537,
+      "mean_power": 0.39951692028553776,
+      "mean_power_relative_error": 7.828458304943471e-07,
+      "power_spectrum_relative_l2": 1.0359289121220743e-05
+    }
+  ]
+}

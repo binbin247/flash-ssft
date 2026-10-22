@@ -1,0 +1,20 @@
+# Python and pytest caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local development settings and environments
+.vscode/
+.venv/
+.env
+.env.*
+!.env.example
+
+# Packaging output
+build/
+dist/
+*.egg-info/
+
+# macOS metadata
+.DS_Store
+._*

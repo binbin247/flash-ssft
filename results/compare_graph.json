@@ -1,0 +1,1498 @@
+{
+  "metadata": {
+    "started_utc": "2026-10-20T14:10:56.044842+00:00",
+    "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "numpy": "2.4.6",
+    "torch": "2.13.0+cu126",
+    "triton": "3.7.1",
+    "torch_cuda": "12.6",
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "gpu_snapshot_start": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 47, 0 %, 45 MiB, 300 MHz, P8",
+    "source_sha256": {
+      "src/flashlle/gpu.py": "eba9c069712d6013ae7e5550fd61ec317ecc1f178c602c142f0df94385d77d62",
+      "src/flashlle/operators.py": "ec4c02ec96246c3a6f5b433742186569de1a0084c4bbe32b0d93e07b5f4ce4cb",
+      "src/flashlle/model.py": "2cce903608f16c36e7f86001e0dd03618014f8179e74442a5a4dea1bd99e7513",
+      "benchmarks/compare_graph.py": "c0648b0c7ee51cbac9c97d457f636d7d7a8460c4b848076af750d5756acef592"
+    },
+    "finished_utc": "2026-10-20T14:19:02.086751+00:00",
+    "gpu_snapshot_end": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.sm [MHz], pstate\nNVIDIA GeForce GTX 1660, 560.94, 48, 32 %, 144 MiB, 375 MHz, P8"
+  },
+  "parameters": {
+    "pump_f": 2.5,
+    "detuning_alpha": 5.0,
+    "d2": 0.02,
+    "dtau": 0.005,
+    "d3": 0.0
+  },
+  "protocol": {
+    "input_and_output": "host angular-domain complex field",
+    "timing": "perf_counter with CUDA synchronization before and after",
+    "gpu_dtype": "complex64",
+    "graph_chunk": 16,
+    "repeats": 5,
+    "warmup_steps_per_mode": 1000,
+    "no_graph": "use_graph=False; CUDA, cuFFT and Triton already warm",
+    "graph_cached": "use_graph=True; previously captured graph",
+    "graph_fresh": "clear graph cache before timing; call includes capture",
+    "order": "rotate variants each repetition to reduce ordering bias",
+    "accuracy": "compare both graph outputs with no_graph each repetition",
+    "note": "steps below graph_chunk bypass graph capture in all variants"
+  },
+  "warmup_seconds": {
+    "1024": {
+      "no_graph": 1.5294694959993649,
+      "graph": 0.025265722997573903
+    },
+    "2048": {
+      "no_graph": 0.2675951589990291,
+      "graph": 0.05324687100073788
+    },
+    "4096": {
+      "no_graph": 0.24693031000060728,
+      "graph": 0.07196668599863187
+    }
+  },
+  "rows": [
+    {
+      "n_modes": 1024,
+      "steps": 16,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.004443587000423577,
+          0.004294485999707831,
+          0.00430728699939209,
+          0.004324386001826497,
+          0.004682086000684649
+        ],
+        "median_seconds": 0.004324386001826497,
+        "min_seconds": 0.004294485999707831,
+        "max_seconds": 0.004682086000684649
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.00042729900087579153,
+          0.0005078979993413668,
+          0.00047039900164236315,
+          0.0004870979973929934,
+          0.0004540980007732287
+        ],
+        "median_seconds": 0.00047039900164236315,
+        "min_seconds": 0.00042729900087579153,
+        "max_seconds": 0.0005078979993413668,
+        "speedup_vs_no_graph": 9.193016963744023,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.005984980998618994,
+          0.006034481997630792,
+          0.0057919819992093835,
+          0.005629882998618996,
+          0.006359680999594275
+        ],
+        "median_seconds": 0.005984980998618994,
+        "min_seconds": 0.005629882998618996,
+        "max_seconds": 0.006359680999594275,
+        "speedup_vs_no_graph": 0.7225396376069245,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 1024,
+      "steps": 17,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.004649186001188355,
+          0.004468586001166841,
+          0.004427685998962261,
+          0.004435486000147648,
+          0.0044856870008516125
+        ],
+        "median_seconds": 0.004468586001166841,
+        "min_seconds": 0.004427685998962261,
+        "max_seconds": 0.004649186001188355
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.0007173980011430103,
+          0.0007183979978435673,
+          0.0006271979982557241,
+          0.0006841980030003469,
+          0.0007368980004685
+        ],
+        "median_seconds": 0.0007173980011430103,
+        "min_seconds": 0.0006271979982557241,
+        "max_seconds": 0.0007368980004685,
+        "speedup_vs_no_graph": 6.228879916095622,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.0059697819997381885,
+          0.005612683002254926,
+          0.005500183000549441,
+          0.00562628300031065,
+          0.005874082002264913
+        ],
+        "median_seconds": 0.00562628300031065,
+        "min_seconds": 0.005500183000549441,
+        "max_seconds": 0.0059697819997381885,
+        "speedup_vs_no_graph": 0.7942341330715345,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 1024,
+      "steps": 100,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.02617212000041036,
+          0.024714023998967605,
+          0.024490323001373326,
+          0.023745623999275267,
+          0.02512642000147025
+        ],
+        "median_seconds": 0.024714023998967605,
+        "min_seconds": 0.023745623999275267,
+        "max_seconds": 0.02617212000041036
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.002015194000705378,
+          0.0017304950015386567,
+          0.001592494998476468,
+          0.0017495950014563277,
+          0.0017817949992604554
+        ],
+        "median_seconds": 0.0017495950014563277,
+        "min_seconds": 0.001592494998476468,
+        "max_seconds": 0.002015194000705378,
+        "speedup_vs_no_graph": 14.12556847635947,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.008113274998322595,
+          0.006708180000714492,
+          0.006515278997540008,
+          0.006995777002885006,
+          0.007369476999883773
+        ],
+        "median_seconds": 0.006995777002885006,
+        "min_seconds": 0.006515278997540008,
+        "max_seconds": 0.008113274998322595,
+        "speedup_vs_no_graph": 3.532706086654238,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 1024,
+      "steps": 1000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.28449429999818676,
+          0.24768581700118375,
+          0.24040903900095145,
+          0.2808364830016217,
+          0.2821413789970393
+        ],
+        "median_seconds": 0.2808364830016217,
+        "min_seconds": 0.24040903900095145,
+        "max_seconds": 0.28449429999818676
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.012545060002594255,
+          0.012635259998205584,
+          0.04060347199992975,
+          0.01246365900078672,
+          0.012370560001727426
+        ],
+        "median_seconds": 0.012545060002594255,
+        "min_seconds": 0.012370560001727426,
+        "max_seconds": 0.04060347199992975,
+        "speedup_vs_no_graph": 22.386220786791462,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.01831714199943235,
+          0.018408642001304543,
+          0.017944544000783935,
+          0.018703838999499567,
+          0.048074342998006614
+        ],
+        "median_seconds": 0.018408642001304543,
+        "min_seconds": 0.017944544000783935,
+        "max_seconds": 0.048074342998006614,
+        "speedup_vs_no_graph": 15.255687137688916,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 1024,
+      "steps": 10000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          2.656273679000151,
+          2.634312158999819,
+          2.4589439639967168,
+          2.6053262210007233,
+          2.615209482002683
+        ],
+        "median_seconds": 2.615209482002683,
+        "min_seconds": 2.4589439639967168,
+        "max_seconds": 2.656273679000151
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.11791355599780218,
+          0.09389826299957349,
+          0.27568757699918933,
+          0.28638781900008325,
+          0.09395140200285823
+        ],
+        "median_seconds": 0.11791355599780218,
+        "min_seconds": 0.09389826299957349,
+        "max_seconds": 0.28638781900008325,
+        "speedup_vs_no_graph": 22.179040059239913,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.1837140099996759,
+          0.09995438699843362,
+          0.23763357599818846,
+          0.12270199400154524,
+          0.09971841999868047
+        ],
+        "median_seconds": 0.12270199400154524,
+        "min_seconds": 0.09971841999868047,
+        "max_seconds": 0.23763357599818846,
+        "speedup_vs_no_graph": 21.313504342641316,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 1024,
+      "steps": 100000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          25.753023121000297,
+          26.233509356003196,
+          26.257217260998004,
+          27.556960850000905,
+          27.35729925099804
+        ],
+        "median_seconds": 26.257217260998004,
+        "min_seconds": 25.753023121000297,
+        "max_seconds": 27.556960850000905
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          1.079995088999567,
+          0.9347057410013804,
+          1.1837613940006122,
+          1.2920989859994734,
+          0.9332483159996627
+        ],
+        "median_seconds": 1.079995088999567,
+        "min_seconds": 0.9332483159996627,
+        "max_seconds": 1.2920989859994734,
+        "speedup_vs_no_graph": 24.312348758290074,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.9405267510010162,
+          0.9398528769997938,
+          1.200354986001912,
+          0.9714436459980789,
+          1.0101311580001493
+        ],
+        "median_seconds": 0.9714436459980789,
+        "min_seconds": 0.9398528769997938,
+        "max_seconds": 1.200354986001912,
+        "speedup_vs_no_graph": 27.029068921461587,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 16,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.004773589000251377,
+          0.004428889998962404,
+          0.0045407889992929995,
+          0.004470689000299899,
+          0.0046489880005538
+        ],
+        "median_seconds": 0.0045407889992929995,
+        "min_seconds": 0.004428889998962404,
+        "max_seconds": 0.004773589000251377
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.0010739979989011772,
+          0.0010966980007651728,
+          0.001084297000488732,
+          0.0010294969979440793,
+          0.0010869969992199913
+        ],
+        "median_seconds": 0.001084297000488732,
+        "min_seconds": 0.0010294969979440793,
+        "max_seconds": 0.0010966980007651728,
+        "speedup_vs_no_graph": 4.187772351344974,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.007034283000393771,
+          0.00696678299937048,
+          0.00670088400147506,
+          0.0069814829985261895,
+          0.006646683999861125
+        ],
+        "median_seconds": 0.00696678299937048,
+        "min_seconds": 0.006646683999861125,
+        "max_seconds": 0.007034283000393771,
+        "speedup_vs_no_graph": 0.6517770109537366,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 17,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.0048857879992283415,
+          0.004595288999553304,
+          0.004867989002377726,
+          0.004414688999531791,
+          0.0047596889999113046
+        ],
+        "median_seconds": 0.0047596889999113046,
+        "min_seconds": 0.004414688999531791,
+        "max_seconds": 0.0048857879992283415
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.0011112970023532398,
+          0.0011019970006600488,
+          0.0011484969982120674,
+          0.0011045979990740307,
+          0.001098597000236623
+        ],
+        "median_seconds": 0.0011045979990740307,
+        "min_seconds": 0.001098597000236623,
+        "max_seconds": 0.0011484969982120674,
+        "speedup_vs_no_graph": 4.30897847352728,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.0071624830015935,
+          0.006535884000186343,
+          0.006951483999728225,
+          0.006455185000959318,
+          0.006549284000357147
+        ],
+        "median_seconds": 0.006549284000357147,
+        "min_seconds": 0.006455185000959318,
+        "max_seconds": 0.0071624830015935,
+        "speedup_vs_no_graph": 0.7267495194362846,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 100,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.024658440001076087,
+          0.02560013800029992,
+          0.02430484100113972,
+          0.024048242001299514,
+          0.023223944001074415
+        ],
+        "median_seconds": 0.02430484100113972,
+        "min_seconds": 0.023223944001074415,
+        "max_seconds": 0.02560013800029992
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.004590388001815882,
+          0.0046223889985412825,
+          0.004568488999211695,
+          0.004569688997435151,
+          0.004709588996774983
+        ],
+        "median_seconds": 0.004590388001815882,
+        "min_seconds": 0.004568488999211695,
+        "max_seconds": 0.004709588996774983,
+        "speedup_vs_no_graph": 5.294724757803725,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.010450375000800705,
+          0.010063474997878075,
+          0.009678076999989571,
+          0.010413274001621176,
+          0.010416373999760253
+        ],
+        "median_seconds": 0.010413274001621176,
+        "min_seconds": 0.009678076999989571,
+        "max_seconds": 0.010450375000800705,
+        "speedup_vs_no_graph": 2.3340249183259614,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 1000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.2351692299998831,
+          0.23426991700034705,
+          0.2298544250006671,
+          0.26511903799837455,
+          0.26534773200182826
+        ],
+        "median_seconds": 0.2351692299998831,
+        "min_seconds": 0.2298544250006671,
+        "max_seconds": 0.26534773200182826
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.042792195999936666,
+          0.04284079699937138,
+          0.013696966001589317,
+          0.013598366000223905,
+          0.013665266000316478
+        ],
+        "median_seconds": 0.013696966001589317,
+        "min_seconds": 0.013598366000223905,
+        "max_seconds": 0.04284079699937138,
+        "speedup_vs_no_graph": 17.169439565856806,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.048551283001870615,
+          0.02795113200045307,
+          0.019305752000946086,
+          0.01958235100028105,
+          0.019109852000838146
+        ],
+        "median_seconds": 0.01958235100028105,
+        "min_seconds": 0.019109852000838146,
+        "max_seconds": 0.048551283001870615,
+        "speedup_vs_no_graph": 12.009243935853663,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 10000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          2.615772344997822,
+          2.598204198999156,
+          2.640318792000471,
+          2.5442088800009515,
+          2.3602285359993402
+        ],
+        "median_seconds": 2.598204198999156,
+        "min_seconds": 2.3602285359993402,
+        "max_seconds": 2.640318792000471
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.2941465740004787,
+          0.10715291000087745,
+          0.33488001899968367,
+          0.2577113139996072,
+          0.10268667099808226
+        ],
+        "median_seconds": 0.2577113139996072,
+        "min_seconds": 0.10268667099808226,
+        "max_seconds": 0.33488001899968367,
+        "speedup_vs_no_graph": 10.081839864442722,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.13897040499796276,
+          0.13846290099900216,
+          0.3559765479985799,
+          0.2186100120015908,
+          0.10877845700088073
+        ],
+        "median_seconds": 0.13897040499796276,
+        "min_seconds": 0.10877845700088073,
+        "max_seconds": 0.3559765479985799,
+        "speedup_vs_no_graph": 18.69609719448716,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 2048,
+      "steps": 100000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          25.598582434999116,
+          25.72360474600282,
+          25.64020606700069,
+          25.534328532001382,
+          25.48282314700191
+        ],
+        "median_seconds": 25.598582434999116,
+        "min_seconds": 25.48282314700191,
+        "max_seconds": 25.72360474600282
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          1.9290297609986737,
+          1.0230791329995554,
+          1.249559011997917,
+          2.0616586249998363,
+          1.166190625001036
+        ],
+        "median_seconds": 1.249559011997917,
+        "min_seconds": 1.0230791329995554,
+        "max_seconds": 2.0616586249998363,
+        "speedup_vs_no_graph": 20.486093245063795,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          1.307321485997818,
+          1.0981677599993418,
+          1.4895864380014245,
+          1.409066800999426,
+          1.6071533949980221
+        ],
+        "median_seconds": 1.409066800999426,
+        "min_seconds": 1.0981677599993418,
+        "max_seconds": 1.6071533949980221,
+        "speedup_vs_no_graph": 18.167046741036334,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 16,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.005028092000429751,
+          0.005025292000937043,
+          0.0048868929989112075,
+          0.0047098920003918465,
+          0.00487869199787383
+        ],
+        "median_seconds": 0.0048868929989112075,
+        "min_seconds": 0.0047098920003918465,
+        "max_seconds": 0.005028092000429751
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.0012593979990924709,
+          0.0011509989999467507,
+          0.0011725980002665892,
+          0.0012808980027330108,
+          0.0011308989996905439
+        ],
+        "median_seconds": 0.0011725980002665892,
+        "min_seconds": 0.0011308989996905439,
+        "max_seconds": 0.0012808980027330108,
+        "speedup_vs_no_graph": 4.167577462864662,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.007233689000713639,
+          0.008114887998090126,
+          0.007930486997793196,
+          0.007107288998668082,
+          0.006776589001674438
+        ],
+        "median_seconds": 0.007233689000713639,
+        "min_seconds": 0.006776589001674438,
+        "max_seconds": 0.008114887998090126,
+        "speedup_vs_no_graph": 0.6755741086503846,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 17,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.004966592001437675,
+          0.012610279998625629,
+          0.0049589920017751865,
+          0.004806492001080187,
+          0.004756392001581844
+        ],
+        "median_seconds": 0.0049589920017751865,
+        "min_seconds": 0.004756392001581844,
+        "max_seconds": 0.012610279998625629
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.0011890980022144504,
+          0.0012150980001024436,
+          0.0011767979995056521,
+          0.0012030979996779934,
+          0.0011932980014535133
+        ],
+        "median_seconds": 0.0011932980014535133,
+        "min_seconds": 0.0011767979995056521,
+        "max_seconds": 0.0012150980001024436,
+        "speedup_vs_no_graph": 4.155702930646676,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.00712968899824773,
+          0.008719285997358384,
+          0.0072682890022406355,
+          0.007824587999493815,
+          0.006895589001942426
+        ],
+        "median_seconds": 0.0072682890022406355,
+        "min_seconds": 0.006895589001942426,
+        "max_seconds": 0.008719285997358384,
+        "speedup_vs_no_graph": 0.6822777685706293,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 100,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.025264960000640713,
+          0.025114759999269154,
+          0.02422666199709056,
+          0.0684533920029935,
+          0.023983162998774787
+        ],
+        "median_seconds": 0.025114759999269154,
+        "min_seconds": 0.023983162998774787,
+        "max_seconds": 0.0684533920029935
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.005371391998778563,
+          0.005441392000648193,
+          0.005525391003175173,
+          0.006858490000013262,
+          0.007870487999753095
+        ],
+        "median_seconds": 0.005525391003175173,
+        "min_seconds": 0.005371391998778563,
+        "max_seconds": 0.007870487999753095,
+        "speedup_vs_no_graph": 4.545336245857881,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.011406882000301266,
+          0.01165288199990755,
+          0.011145082000439288,
+          0.014400377996935276,
+          0.01131458300005761
+        ],
+        "median_seconds": 0.011406882000301266,
+        "min_seconds": 0.011145082000439288,
+        "max_seconds": 0.014400377996935276,
+        "speedup_vs_no_graph": 2.2017199790973425,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 1000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          0.29972791300315293,
+          0.23005832399940118,
+          0.23398721799821942,
+          0.2720974420008133,
+          0.23550040299960529
+        ],
+        "median_seconds": 0.23550040299960529,
+        "min_seconds": 0.23005832399940118,
+        "max_seconds": 0.29972791300315293
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.05057541699716239,
+          0.0466602239976055,
+          0.01805687099840725,
+          0.017970069999137195,
+          0.018022069001744967
+        ],
+        "median_seconds": 0.01805687099840725,
+        "min_seconds": 0.017970069999137195,
+        "max_seconds": 0.05057541699716239,
+        "speedup_vs_no_graph": 13.042149053420063,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.05424291099916445,
+          0.05293761400025687,
+          0.02351426099994569,
+          0.023843959999794606,
+          0.023998559001483954
+        ],
+        "median_seconds": 0.023998559001483954,
+        "min_seconds": 0.02351426099994569,
+        "max_seconds": 0.05424291099916445,
+        "speedup_vs_no_graph": 9.813105986282055,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 10000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          2.7919667530004517,
+          2.4932855759980157,
+          2.5258572959974117,
+          2.589312518000952,
+          2.5993596380030795
+        ],
+        "median_seconds": 2.589312518000952,
+        "min_seconds": 2.4932855759980157,
+        "max_seconds": 2.7919667530004517
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          0.3696870250023494,
+          0.14375991899942164,
+          0.28256681200218736,
+          0.24237985400031903,
+          0.13740515699828393
+        ],
+        "median_seconds": 0.24237985400031903,
+        "min_seconds": 0.13740515699828393,
+        "max_seconds": 0.3696870250023494,
+        "speedup_vs_no_graph": 10.682870194308904,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          0.15767855199737824,
+          0.17118517299968516,
+          0.368557920002786,
+          0.15820629600057146,
+          0.17709102299704682
+        ],
+        "median_seconds": 0.17118517299968516,
+        "min_seconds": 0.15767855199737824,
+        "max_seconds": 0.368557920002786,
+        "speedup_vs_no_graph": 15.125798996655593,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    },
+    {
+      "n_modes": 4096,
+      "steps": 100000,
+      "graph_active": true,
+      "execution_orders": [
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ],
+        [
+          "graph_fresh",
+          "no_graph",
+          "graph_cached"
+        ],
+        [
+          "no_graph",
+          "graph_cached",
+          "graph_fresh"
+        ],
+        [
+          "graph_cached",
+          "graph_fresh",
+          "no_graph"
+        ]
+      ],
+      "no_graph": {
+        "repeat_seconds": [
+          25.687291395999637,
+          25.02132174199869,
+          25.97292364399982,
+          26.750202003000595,
+          26.82180346000314
+        ],
+        "median_seconds": 25.97292364399982,
+        "min_seconds": 25.02132174199869,
+        "max_seconds": 26.82180346000314
+      },
+      "graph_cached": {
+        "repeat_seconds": [
+          1.7349500950003858,
+          1.5697450049992767,
+          1.874521112000366,
+          1.7629060559993377,
+          1.4437527269983548
+        ],
+        "median_seconds": 1.7349500950003858,
+        "min_seconds": 1.4437527269983548,
+        "max_seconds": 1.874521112000366,
+        "speedup_vs_no_graph": 14.970415413588047,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      },
+      "graph_fresh": {
+        "repeat_seconds": [
+          1.6305907889982336,
+          1.8316125889978139,
+          1.7276622540011886,
+          1.8677065140000195,
+          1.590716173999681
+        ],
+        "median_seconds": 1.7276622540011886,
+        "min_seconds": 1.590716173999681,
+        "max_seconds": 1.8677065140000195,
+        "speedup_vs_no_graph": 15.033565492241143,
+        "accuracy": {
+          "all_bitwise_equal": true,
+          "max_field_relative_l2": 0.0,
+          "max_absolute_error": 0.0
+        }
+      }
+    }
+  ]
+}
