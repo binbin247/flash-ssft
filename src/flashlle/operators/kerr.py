@@ -7,7 +7,7 @@ import torch
 import triton
 import triton.language as tl
 
-from ._validation import check_complex64_cuda
+from ._validation import check_complex64_cuda, check_num_warps
 
 
 @triton.jit
@@ -36,14 +36,16 @@ def _kerr_kernel(angular_ptr, h, N: tl.constexpr, BLOCK: tl.constexpr):
     tl.store(angular_ptr + 2 * offsets + 1, re * s + im * c, mask)
 
 
-def kerr_(angular: torch.Tensor, h: float) -> torch.Tensor:
+def kerr_(angular: torch.Tensor, h: float, *, num_warps: int = 4) -> torch.Tensor:
     """Fuse intensity, phase rotation and complex multiplication, in place."""
     check_complex64_cuda(angular, "angular")
+    num_warps = check_num_warps(num_warps)
     N = angular.numel()
     _kerr_kernel[(triton.cdiv(N, 256),)](
         angular_ptr=angular.view(torch.float32),
         h=float(h),
         N=N,
         BLOCK=256,
+        num_warps=num_warps,
     )
     return angular

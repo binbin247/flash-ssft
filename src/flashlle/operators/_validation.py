@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from numbers import Integral
+
 import torch
 
 
@@ -16,3 +18,10 @@ def check_complex64_cuda(field: torch.Tensor, label: str) -> None:
         raise ValueError(f"{label} must be a one-dimensional field")
     if not field.is_contiguous():
         raise ValueError(f"{label} must be contiguous")
+
+
+def check_num_warps(num_warps: int) -> int:
+    """Validate and normalize the Triton launch's warp count."""
+    if not isinstance(num_warps, Integral) or isinstance(num_warps, bool) or num_warps < 1:
+        raise ValueError("num_warps must be a positive integer")
+    return int(num_warps)

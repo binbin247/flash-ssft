@@ -6,7 +6,7 @@ import torch
 import triton
 import triton.language as tl
 
-from ._validation import check_complex64_cuda
+from ._validation import check_complex64_cuda, check_num_warps
 from .kerr import kerr_
 
 
@@ -47,27 +47,33 @@ def _kerr_raman_kernel(
     tl.store(angular_ptr + 2 * offsets + 1, re * s + im * c, mask)
 
 
-def kerr_raman_(angular: torch.Tensor, h: float, raman: float) -> torch.Tensor:
+def kerr_raman_(
+    angular: torch.Tensor, h: float, raman: float, *, num_warps: int = 4
+) -> torch.Tensor:
     """Apply exp(i*h*(|ψ|² - raman*∂θ|ψ|²)) in place on a 2π-periodic grid."""
     check_complex64_cuda(angular, "angular")
+    num_warps = check_num_warps(num_warps)
     N = angular.numel()
     if N == 0:
         raise ValueError("angular must not be empty")
     h, raman = float(h), float(raman)
     if raman == 0:
-        return kerr_(angular, h)
+        return kerr_(angular, h, num_warps=num_warps)
 
     intensity = torch.empty(N, dtype=torch.float32, device=angular.device)
     _intensity_kernel[(triton.cdiv(N, 256),)](
-        angular_ptr=angular.view(torch.float32), intensity_ptr=intensity, N=N, BLOCK=256
+        angular_ptr=angular.view(torch.float32), intensity_ptr=intensity, N=N, BLOCK=256,
+        num_warps=num_warps,
     )
     spectrum = torch.fft.rfft(intensity)
     _spectral_derivative_kernel[(triton.cdiv(N // 2 + 1, 256),)](
-        spectrum_ptr=spectrum.view(torch.float32), N=N, BLOCK=256
+        spectrum_ptr=spectrum.view(torch.float32), N=N, BLOCK=256,
+        num_warps=num_warps,
     )
     derivative = torch.fft.irfft(spectrum, n=N)
     _kerr_raman_kernel[(triton.cdiv(N, 256),)](
         angular_ptr=angular.view(torch.float32), derivative_ptr=derivative,
         h=h, raman=raman, N=N, BLOCK=256,
+        num_warps=num_warps,
     )
     return angular
