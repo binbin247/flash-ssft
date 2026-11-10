@@ -8,7 +8,7 @@ import torch
 import triton
 import triton.language as tl
 
-from ._validation import check_complex64_cuda, check_num_warps
+from ._validation import check_block, check_complex64_cuda, check_num_warps
 
 
 @triton.jit
@@ -81,6 +81,7 @@ def kerr_shock_(
     h: float,               # Propagation step along z.
     omega0: float,          # Positive carrier angular frequency, in the units of w.
     *,
+    block: int = 256,
     num_warps: int = 4,
 ) -> torch.Tensor:          # Returns the original angular tensor.
     """Apply B = A*exp(i*h*|A|²), then A = B - h/omega0 * dT(|B|²B).
@@ -107,10 +108,11 @@ def kerr_shock_(
         raise ValueError("h must be finite")
     if not omega0 > 0:
         raise ValueError("omega0 must be positive")
+    block = check_block(block)
     num_warps = check_num_warps(num_warps)
     if h == 0:
         return angular
-    grid = (triton.cdiv(N, 256),)
+    grid = (triton.cdiv(N, block),)
     shock_enabled = omega0 != float("inf")
     cubic = torch.empty_like(input=angular) if shock_enabled else None
     _kerr_cubic_kernel[grid](
@@ -118,7 +120,7 @@ def kerr_shock_(
         cubic_ptr=cubic.view(dtype=torch.float32) if shock_enabled else None,
         h=h,
         N=N,
-        BLOCK=256,
+        BLOCK=block,
         WRITE_CUBIC=shock_enabled,
         num_warps=num_warps,
     )
@@ -131,7 +133,7 @@ def kerr_shock_(
         w_ptr=w,
         omega0=omega0,
         N=N,
-        BLOCK=256,
+        BLOCK=block,
         num_warps=num_warps,
     )
     derivative = torch.fft.ifft(spectrum)
@@ -140,7 +142,7 @@ def kerr_shock_(
         derivative_ptr=derivative.view(dtype=torch.float32),
         h=h,
         N=N,
-        BLOCK=256,
+        BLOCK=block,
         num_warps=num_warps,
     )
     return angular

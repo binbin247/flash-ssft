@@ -22,6 +22,18 @@ def check_complex64_cuda(field: torch.Tensor, label: str) -> None:
 
 def check_num_warps(num_warps: int) -> int:
     """Validate and normalize the Triton launch's warp count."""
-    if not isinstance(num_warps, Integral) or isinstance(num_warps, bool) or num_warps < 1:
-        raise ValueError("num_warps must be a positive integer")
-    return int(num_warps)
+    return _check_power_of_two(num_warps, "num_warps")
+
+
+def check_block(block: int) -> int:
+    """Validate and normalize a Triton block size."""
+    return _check_power_of_two(block, "block")
+
+
+def _check_power_of_two(value: int, name: str) -> int:
+    if not isinstance(value, Integral) or isinstance(value, bool) or value < 1:
+        raise ValueError(f"{name} must be a positive power of two")
+    value = int(value)
+    if value & (value - 1):
+        raise ValueError(f"{name} must be a positive power of two")
+    return value

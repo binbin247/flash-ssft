@@ -14,6 +14,30 @@ from ._validation import check_input
 from .params import NLSEParams, angular_frequencies, linear_coefficients
 
 
+def pytorch_nlse_step(
+    field: torch.Tensor,
+    linear: torch.Tensor,
+    w: torch.Tensor,
+    h: float,
+    omega0: float,
+) -> torch.Tensor:
+    """Run one ordinary PyTorch NLSE step on an already prepared GPU field."""
+    field = torch.fft.ifft(torch.fft.fft(field) * linear)
+    if h == 0:
+        return field
+
+    field.mul_(torch.exp(1j * h * field.abs().square()))
+    if omega0 == float("inf"):
+        return field
+
+    cubic = field.abs().square() * field
+    derivative = torch.fft.ifft(
+        (1j * w.to(torch.float32) / omega0) * torch.fft.fft(cubic)
+    )
+    field.sub_(h * derivative)
+    return field
+
+
 def simulate_pytorch(a0: np.ndarray, params: NLSEParams, steps: int) -> np.ndarray:
     """Propagate on the current CUDA device and return a new NumPy field.
 
@@ -27,7 +51,7 @@ def simulate_pytorch(a0: np.ndarray, params: NLSEParams, steps: int) -> np.ndarr
         return np.array(field, dtype=np.complex64, copy=True)
 
     device = torch.device("cuda", torch.cuda.current_device())
-    field = torch.as_tensor(field, dtype=torch.complex64, device=device)
+    field = torch.as_tensor(field, dtype=torch.complex64, device=device).contiguous()
     linear = torch.as_tensor(
         linear_coefficients(params), dtype=torch.complex64, device=device
     )
@@ -38,18 +62,6 @@ def simulate_pytorch(a0: np.ndarray, params: NLSEParams, steps: int) -> np.ndarr
 
     with torch.no_grad():
         for _ in range(steps):
-            field = torch.fft.ifft(torch.fft.fft(field) * linear)
-            if h == 0:
-                continue
-
-            field.mul_(torch.exp(1j * h * field.abs().square()))
-            if params.omega0 == float("inf"):
-                continue
-
-            cubic = field.abs().square() * field
-            derivative = torch.fft.ifft(
-                (1j * w / params.omega0) * torch.fft.fft(cubic)
-            )
-            field.sub_(h * derivative)
+            field = pytorch_nlse_step(field, linear, w, h, params.omega0)
 
     return field.cpu().numpy().copy()

@@ -12,6 +12,7 @@ import torch
 from ._validation import check_graph_chunk, check_input, check_steps
 from .params import NLSEParams, angular_frequencies, linear_coefficients
 from ..operators import disp_and_loss_, kerr_shock_
+from ..operators._validation import check_block, check_num_warps
 
 
 def nlse_step(
@@ -20,6 +21,9 @@ def nlse_step(
     w: torch.Tensor,
     h: float,
     omega0: float,
+    *,
+    block: int = 256,
+    num_warps: int = 4,
 ) -> torch.Tensor:
     """One Lie step: linear propagation, exact Kerr, then Euler self-steepening.
 
@@ -29,10 +33,15 @@ def nlse_step(
     """
     # Keep the linear operator in the frequency domain, where dispersion and
     # loss are represented by one elementwise propagation factor.
+    block = check_block(block)
+    num_warps = check_num_warps(num_warps)
     spectrum = torch.fft.fft(field)
-    disp_and_loss_(spectrum, linear)
+    disp_and_loss_(spectrum, linear, block=block, num_warps=num_warps)
     # The nonlinear operator works in the time domain and returns a new field.
-    return kerr_shock_(torch.fft.ifft(spectrum), w, h, omega0)
+    return kerr_shock_(
+        torch.fft.ifft(spectrum), w, h, omega0,
+        block=block, num_warps=num_warps,
+    )
 
 
 class CudaGraphStepper:
@@ -87,7 +96,7 @@ class CudaGraphStepper:
 
 
 # A runner owns mutable CUDA buffers, so cached runners must be used serially.
-_GRAPH_CACHE: dict[tuple[NLSEParams, int, int], CudaGraphStepper] = {}
+_GRAPH_CACHE: dict[tuple[NLSEParams, int, int, int, int], CudaGraphStepper] = {}
 _GRAPH_CACHE_LOCK = RLock()
 
 
@@ -103,10 +112,14 @@ def simulate_gpu(
     steps: int,
     *,
     graph_chunk: int = 16,
+    block: int = 256,
+    num_warps: int = 4,
 ) -> np.ndarray:
     """Propagate to z=steps*dz; return a new NumPy complex64 time-domain field."""
     field = check_input(a0, params.n_samples, steps)
     check_graph_chunk(graph_chunk)
+    block = check_block(block)
+    num_warps = check_num_warps(num_warps)
     if steps == 0 or params.dz == 0:
         return np.array(field, dtype=np.complex64, copy=True)
 
@@ -116,7 +129,7 @@ def simulate_gpu(
     # The captured graph has a fixed length; a shorter graph avoids doing
     # unnecessary work when the requested propagation is shorter than chunk.
     graph_chunk = min(graph_chunk, steps)
-    key = (params, graph_chunk, device.index)
+    key = (params, graph_chunk, block, num_warps, device.index)
     with _GRAPH_CACHE_LOCK:
         runner = _GRAPH_CACHE.get(key)
         if runner is None:
@@ -126,7 +139,8 @@ def simulate_gpu(
             linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
             w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
             step = partial(nlse_step, linear=linear_gpu, w=w,
-                           h=params.gamma0 * params.dz, omega0=params.omega0)
+                           h=params.gamma0 * params.dz, omega0=params.omega0,
+                           block=block, num_warps=num_warps)
             runner = CudaGraphStepper(field_gpu, step, graph_chunk)
             _GRAPH_CACHE[key] = runner
         final_field = runner.run(field_gpu, steps)

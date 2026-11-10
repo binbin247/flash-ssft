@@ -8,7 +8,7 @@ import torch
 import triton
 import triton.language as tl
 
-from ._validation import check_complex64_cuda, check_num_warps
+from ._validation import check_block, check_complex64_cuda, check_num_warps
 
 
 @dataclass(frozen=True)
@@ -61,6 +61,7 @@ def disp_and_loss_(
     spectrum: torch.Tensor,  # FFT of the field A; updated in place.
     linear: torch.Tensor,    # Precomputed dispersion/loss factors from make_linear.
     *,
+    block: int = 256,
     num_warps: int = 4,
 ) -> torch.Tensor:
     """Multiply the FFT spectrum by precomputed dispersion/loss factors in place.
@@ -72,14 +73,15 @@ def disp_and_loss_(
     check_complex64_cuda(linear, "linear")
     if spectrum.shape != linear.shape or spectrum.device != linear.device:
         raise ValueError("spectrum and linear must have matching shape and device")
+    block = check_block(block)
     num_warps = check_num_warps(num_warps)
 
     N = spectrum.numel()
-    _disp_and_loss_kernel[(triton.cdiv(N, 256),)](
+    _disp_and_loss_kernel[(triton.cdiv(N, block),)](
         spectrum_ptr=spectrum.view(torch.float32),
         linear_ptr=linear.view(torch.float32),
         N=N,
-        BLOCK=256,
+        BLOCK=block,
         num_warps=num_warps,
     )
     return spectrum

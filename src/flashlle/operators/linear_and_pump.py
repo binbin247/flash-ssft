@@ -7,7 +7,7 @@ import torch
 import triton
 import triton.language as tl
 
-from ._validation import check_complex64_cuda, check_num_warps
+from ._validation import check_block, check_complex64_cuda, check_num_warps
 
 
 @triton.jit
@@ -40,23 +40,25 @@ def _linear_and_pump_kernel(
 
 
 def linear_and_pump_(
-    spectrum: torch.Tensor, linear: torch.Tensor, pump: complex, *, num_warps: int = 4
+    spectrum: torch.Tensor, linear: torch.Tensor, pump: complex, *,
+    block: int = 256, num_warps: int = 4
 ) -> torch.Tensor:
     """Apply precomputed linear factors and the zero-mode pump increment in place."""
     check_complex64_cuda(spectrum, "spectrum")
     check_complex64_cuda(linear, "linear")
     if spectrum.shape != linear.shape or spectrum.device != linear.device:
         raise ValueError("spectrum and linear must have matching shape and device")
+    block = check_block(block)
     num_warps = check_num_warps(num_warps)
     pump = complex(pump)
     N = spectrum.numel()
-    _linear_and_pump_kernel[(triton.cdiv(N, 256),)](
+    _linear_and_pump_kernel[(triton.cdiv(N, block),)](
         spectrum_ptr=spectrum.view(torch.float32),
         linear_ptr=linear.view(torch.float32),
         pump_re=float(pump.real),
         pump_im=float(pump.imag),
         N=N,
-        BLOCK=256,
+        BLOCK=block,
         num_warps=num_warps,
     )
     return spectrum
