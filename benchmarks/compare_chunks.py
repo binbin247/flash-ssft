@@ -13,6 +13,7 @@ import json
 import random
 import sys
 import time
+from dataclasses import asdict
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -24,22 +25,23 @@ import numpy as np
 import torch
 import triton
 
-from flashlle import LLEParams, initial_field, linear_coefficients
-from flashlle.gpu import CudaGraphStepper, clear_graph_cache, lle_step, simulate_gpu
+from examples.run_tod import example_params, initial_field
+from flashlle.solvers import angular_frequencies, linear_coefficients
+from flashlle.solvers.nlse import CudaGraphStepper, clear_graph_cache, nlse_step, simulate_gpu
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--modes", nargs="+", type=int, default=[1024, 2048, 4096])
+    parser.add_argument("--samples", "--modes", dest="samples", nargs="+", type=int, default=[1024, 2048, 4096])
     parser.add_argument("--chunks", nargs="+", type=int,
                         default=[1, 4, 16, 32, 64, 100, 128, 256])
-    parser.add_argument("--steps", nargs="+", type=int, default=[1000, 10000, 100000])
+    parser.add_argument("--steps", nargs="+", type=int, default=[100, 1000])
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--output", type=Path,
-                        default=PROJECT_ROOT / "results" / "compare_chunks.json")
+                        default=PROJECT_ROOT / "results" / "compare_chunks_nlse.json")
     args = parser.parse_args()
-    if args.repeats < 1 or min(args.modes) < 2 or min(args.chunks) < 1 or min(args.steps) < 1:
-        parser.error("repeats, chunks and steps must be positive; modes must be >= 2")
+    if args.repeats < 1 or min(args.samples) < 2 or min(args.chunks) < 1 or min(args.steps) < 1:
+        parser.error("repeats, chunks and steps must be positive; samples must be >= 2")
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required")
 
@@ -58,13 +60,14 @@ def main():
             ),
         },
         "protocol": {
+            "equation": "NLSE with dispersion, loss, Kerr and self-steepening",
             "repeats": args.repeats,
             "chunks": args.chunks,
             "steps": args.steps,
             "timing": "perf_counter with CUDA synchronization before and after",
-            "splitting": "first-order Lie; full linear/pump step followed by full Kerr step",
-            "gpu_linear_evolution": "precomputed exp(lambda*h), then zero-mode pump=NFh (first-order approximation); followed by IFFT and Kerr",
-            "state_domain": "angular",
+            "splitting": "first-order Lie: dispersion/loss, exact Kerr, then Euler self-steepening",
+            "gpu_linear_evolution": "exp(dz*(-alpha/2+i*sum((-1)^m*beta_m*w^m/m!))); nonlinear h=gamma0*dz",
+            "state_domain": "time",
             "setup": "CudaGraphStepper constructor at the requested chunk, independent of run steps; no replay; libraries already warm",
             "cached": "public simulate_gpu call with a cached graph; host-to-host",
             "memory": "PyTorch reserved-memory increase during constructor, after empty_cache; excludes allocations outside PyTorch allocator",
@@ -82,9 +85,9 @@ def main():
         args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
 
     rng = random.Random(20261020)
-    for n_modes in args.modes:
+    for n_samples in args.samples:
         clear_graph_cache()
-        params = LLEParams(n_modes=n_modes)
+        params = example_params(n_samples)
         seed = initial_field(params)
         simulate_gpu(seed, params, 1000)
         references = {
@@ -94,13 +97,16 @@ def main():
         clear_graph_cache()
         device = torch.device("cuda", torch.cuda.current_device())
         seed_gpu = torch.as_tensor(seed, dtype=torch.complex64, device=device)
-        linear, pump = linear_coefficients(params)
+        linear = linear_coefficients(params)
         linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
-        step = partial(lle_step, linear=linear_gpu, pump=pump, h=params.h)
+        w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
+        step = partial(nlse_step, linear=linear_gpu, w=w,
+                       h=params.gamma0 * params.dz, omega0=params.omega0)
         rows = {}
         for chunk in args.chunks:
             row = {
-                "n_modes": n_modes,
+                "n_samples": n_samples,
+                "parameters": asdict(params),
                 "chunk": chunk,
                 "setup_seconds": [],
                 "graph_reserved_bytes": [],
@@ -119,7 +125,7 @@ def main():
         for repeat in range(args.repeats):
             order = list(args.chunks)
             rng.shuffle(order)
-            result["orders"].append({"n_modes": n_modes, "repeat": repeat, "chunks": order})
+            result["orders"].append({"n_samples": n_samples, "repeat": repeat, "chunks": order})
             for chunk in order:
                 clear_graph_cache()
                 torch.cuda.synchronize()
@@ -153,7 +159,7 @@ def main():
                     if error["field_relative_l2"] > 1e-5:
                         raise AssertionError(error)
                 save()
-            print(f"N={n_modes} repeat={repeat + 1}/{args.repeats} finished", flush=True)
+            print(f"N={n_samples} repeat={repeat + 1}/{args.repeats} finished", flush=True)
 
         for row in rows.values():
             row["setup_median_seconds"] = median(row["setup_seconds"])
@@ -167,12 +173,12 @@ def main():
                 for run in row["runs"]
             )
             print(
-                f"N={n_modes} chunk={row['chunk']:3d} "
+                f"N={n_samples} chunk={row['chunk']:3d} "
                 f"setup={row['setup_median_seconds'] * 1000:.2f}ms "
                 f"reserved={row['graph_reserved_median_bytes'] / 2**20:.1f}MiB "
                 f"{timings}", flush=True,
             )
-        del seed_gpu, step, linear_gpu
+        del seed_gpu, step, linear_gpu, w
         save()
 
     clear_graph_cache()

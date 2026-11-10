@@ -4,13 +4,12 @@ import numpy as np
 import pytest
 
 from benchmarks._numpy_reference import numpy_kerr_raman
-from benchmarks._torch_reference import torch_kerr_raman_
-from flashlle.operators import kerr_, kerr_raman_
 
 
 @pytest.fixture(scope="module")
 def cuda():
     torch = pytest.importorskip("torch")
+    pytest.importorskip("triton")
     if not torch.cuda.is_available():
         pytest.skip("CUDA is required for Kerr–Raman GPU checks")
     return torch
@@ -38,6 +37,8 @@ def test_numpy_reference_matches_analytic_derivative(n, frequency):
 @pytest.mark.parametrize("n", [1, 2, 255, 256, 257, 1024])
 @pytest.mark.parametrize("raman", [-0.03, 0.03])
 def test_kerr_raman_matches_complex128_reference_in_place(cuda, n, raman):
+    from flashlle.operators import kerr_raman_
+
     rng = np.random.default_rng(21)
     field = (0.5 * (rng.normal(size=n) + 1j * rng.normal(size=n))).astype(np.complex64)
     angular = cuda.as_tensor(field.copy(), device="cuda")
@@ -51,6 +52,8 @@ def test_kerr_raman_matches_complex128_reference_in_place(cuda, n, raman):
 
 @pytest.mark.parametrize("n,frequency", [(257, 3), (255, 127), (256, 128)])
 def test_kerr_raman_analytic_phase_and_highest_frequency(cuda, n, frequency):
+    from flashlle.operators import kerr_raman_
+
     theta = 2 * np.pi * np.arange(n) / n
     intensity = 1 + 0.2 * np.cos(frequency * theta)
     derivative = -0.2 * frequency * np.sin(frequency * theta)
@@ -76,6 +79,8 @@ def test_spectral_derivative_endpoint_convention(cuda, n):
 
 
 def test_kerr_raman_zero_coefficient_and_zero_step(cuda):
+    from flashlle.operators import kerr_, kerr_raman_
+
     field = cuda.as_tensor(smooth_field(257), device="cuda")
     expected = kerr_(field.clone(), 0.1)
     actual = kerr_raman_(field.clone(), 0.1, 0)
@@ -85,6 +90,8 @@ def test_kerr_raman_zero_coefficient_and_zero_step(cuda):
 
 
 def test_kerr_raman_uniform_intensity(cuda):
+    from flashlle.operators import kerr_raman_
+
     n = 257
     phase = 0.1 * np.sin(2 * np.pi * np.arange(n) / n)
     field = (0.75 * np.exp(1j * phase)).astype(np.complex64)
@@ -94,8 +101,12 @@ def test_kerr_raman_uniform_intensity(cuda):
 
 
 @pytest.mark.parametrize("n", [257, 1024])
-@pytest.mark.parametrize("operation", [kerr_raman_, torch_kerr_raman_], ids=["triton", "torch"])
-def test_kerr_raman_repeated_graph_replay_and_new_input(cuda, n, operation):
+@pytest.mark.parametrize("backend", ["triton", "torch"])
+def test_kerr_raman_repeated_graph_replay_and_new_input(cuda, n, backend):
+    from benchmarks._torch_reference import torch_kerr_raman_
+    from flashlle.operators import kerr_raman_
+
+    operation = kerr_raman_ if backend == "triton" else torch_kerr_raman_
     seed = cuda.as_tensor(smooth_field(n), device="cuda")
     state = seed.clone()
     stream = cuda.cuda.Stream()
@@ -125,6 +136,8 @@ def test_kerr_raman_repeated_graph_replay_and_new_input(cuda, n, operation):
 
 
 def test_kerr_raman_rejects_empty_and_noncontiguous_input(cuda):
+    from flashlle.operators import kerr_raman_
+
     with pytest.raises(ValueError, match="empty"):
         kerr_raman_(cuda.empty(0, dtype=cuda.complex64, device="cuda"), 0.005, 0.01)
     field = cuda.ones(10, dtype=cuda.complex64, device="cuda")

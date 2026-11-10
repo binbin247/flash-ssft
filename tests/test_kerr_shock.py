@@ -2,7 +2,9 @@
 
 import numpy as np
 import pytest
-import torch
+
+torch = pytest.importorskip("torch")
+pytest.importorskip("triton")
 
 from flashlle.operators import kerr_, kerr_shock_
 

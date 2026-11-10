@@ -6,7 +6,9 @@ from math import factorial
 
 import numpy as np
 import pytest
-import torch
+
+torch = pytest.importorskip("torch")
+pytest.importorskip("triton")
 
 from flashlle.operators import DispParams, disp_and_loss_, make_linear
 

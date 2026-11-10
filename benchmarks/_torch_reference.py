@@ -40,11 +40,16 @@ def torch_linear_and_pump_(
     return spectrum
 
 
-def torch_lle_step(
-    angular: torch.Tensor, linear: torch.Tensor, pump: complex, h: float
+def torch_nlse_step(
+    field: torch.Tensor, linear: torch.Tensor, w: torch.Tensor, h: float, omega0: float
 ) -> torch.Tensor:
-    """Use the same FFT -> linear/pump -> IFFT -> Kerr ordering as production."""
-    spectrum = torch.fft.fft(angular)
-    torch_linear_and_pump_(spectrum, linear, pump)
-    angular = torch.fft.ifft(spectrum)
-    return torch_kerr_(angular, h)
+    """Full dispersion/loss -> Kerr -> Euler shock step, with h=gamma0*dz."""
+    field = torch.fft.ifft(torch.fft.fft(field) * linear)
+    if h == 0:
+        return field
+    torch_kerr_(field, h)
+    if omega0 != float("inf"):
+        cubic = field.abs().square() * field
+        derivative = torch.fft.ifft((1j * w.to(torch.float32) / omega0) * torch.fft.fft(cubic))
+        field.sub_(h * derivative)
+    return field

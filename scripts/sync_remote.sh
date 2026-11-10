@@ -14,7 +14,6 @@ tar --format ustar --exclude .DS_Store --exclude '._*' \
   | ssh -o RemoteCommand=none -o RequestTTY=no optics-cuda \
     "wsl.exe -d Ubuntu-24.04-CUDA -u optomachanics --cd ~ -- tar -xf - -C $remote_dir"
 
-# The operator implementations moved from operators.py into an operators/
-# package. Remove only that obsolete file after the new package is in place.
+# Remove obsolete modules after the operator package and NLSE solver are in place.
 ssh -o RemoteCommand=none -o RequestTTY=no optics-cuda \
-  "wsl.exe -d Ubuntu-24.04-CUDA -u optomachanics --cd ~ -- rm -f $remote_dir/src/flashlle/operators.py"
+  "wsl.exe -d Ubuntu-24.04-CUDA -u optomachanics --cd ~ -- rm -f $remote_dir/src/flashlle/operators.py $remote_dir/src/flashlle/gpu.py $remote_dir/src/flashlle/model.py $remote_dir/src/flashlle/reference.py $remote_dir/src/flashlle/_validation.py $remote_dir/src/flashlle/solvers/lle.py"

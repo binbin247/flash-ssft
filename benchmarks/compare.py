@@ -1,9 +1,9 @@
-"""Host-to-host benchmark of the composable GPU LLE solver against NumPy.
+"""Host-to-host benchmark of the composable GPU NLSE solver against NumPy.
 
 From the project root::
 
-    python benchmarks/compare.py --modes 1024 2048 4096 \
-        --steps 1000 10000 100000 --repeats 3
+    python benchmarks/compare.py --samples 1024 2048 4096 \
+        --steps 100 1000 --repeats 3
 
 The timed call receives a host initial field and returns the final host field.
 Initialization, Triton compilation, and CUDA Graph capture are represented by
@@ -29,9 +29,11 @@ from typing import Callable
 import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from flashlle import LLEParams, initial_field, simulate_gpu, simulate_numpy
+from examples.run_tod import example_params, initial_field
+from flashlle.solvers import NLSEParams, simulate_numpy
 
 
 def _relative_l2(actual: np.ndarray, reference: np.ndarray) -> float:
@@ -56,9 +58,9 @@ def _accuracy(field: np.ndarray, reference: np.ndarray) -> dict[str, float]:
 
 
 def _timed_call(
-    solver: Callable[[np.ndarray, LLEParams, int], np.ndarray],
+    solver: Callable[[np.ndarray, NLSEParams, int], np.ndarray],
     seed: np.ndarray,
-    params: LLEParams,
+    params: NLSEParams,
     steps: int,
     *,
     gpu: bool,
@@ -73,7 +75,7 @@ def _timed_call(
     if gpu:
         torch.cuda.synchronize()
     elapsed = time.perf_counter() - start
-    if final.shape != (params.n_modes,) or not np.issubdtype(final.dtype, np.complexfloating):
+    if final.shape != (params.n_samples,) or not np.issubdtype(final.dtype, np.complexfloating):
         raise ValueError(f"Unexpected solver result: shape={final.shape}, dtype={final.dtype}")
     if not np.isfinite(final).all():
         raise FloatingPointError("Solver returned a non-finite field")
@@ -106,9 +108,9 @@ def _software_hardware(include_gpu: bool) -> dict[str, object]:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--modes", nargs="+", type=int, default=[1024, 2048, 4096])
-    parser.add_argument("--steps", nargs="+", type=int, default=[1000, 10000, 100000])
-    parser.add_argument("--d3", type=float, default=0.0)
+    parser.add_argument("--samples", "--modes", dest="samples", nargs="+", type=int, default=[1024, 2048, 4096])
+    parser.add_argument("--steps", nargs="+", type=int, default=[100, 1000])
+    parser.add_argument("--beta3", type=float, default=0.05)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--extra-warmups", type=int, default=0,
                         help="Additional calls after the recorded first call")
@@ -116,10 +118,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--backends", nargs="+", choices=("numpy", "gpu"),
                         default=["numpy", "gpu"])
     parser.add_argument("--output", type=Path,
-                        default=PROJECT_ROOT / "results" / "compare.json")
+                        default=PROJECT_ROOT / "results" / "compare_nlse.json")
     args = parser.parse_args()
-    if any(n <= 0 for n in args.modes):
-        parser.error("--modes must contain positive integers")
+    if any(n <= 0 for n in args.samples):
+        parser.error("--samples must contain positive integers")
     if any(s < 0 for s in args.steps):
         parser.error("--steps must contain nonnegative integers")
     if args.repeats <= 0 or args.extra_warmups < 0 or args.graph_chunk <= 0:
@@ -131,10 +133,13 @@ def main() -> None:
     args = _parse_args()
     include_gpu = "gpu" in args.backends
     metadata = _software_hardware(include_gpu)
+    if include_gpu:
+        from flashlle.solvers.nlse import simulate_gpu
+
     rows: list[dict[str, object]] = []
 
-    for n_modes in args.modes:
-        params = LLEParams(n_modes=n_modes, d3=args.d3)
+    for n_samples in args.samples:
+        params = example_params(n_samples, beta3=args.beta3)
         seed = initial_field(params)
         for steps in args.steps:
             final_by_backend: dict[str, np.ndarray] = {}
@@ -158,7 +163,9 @@ def main() -> None:
 
                 final_by_backend[backend] = final
                 row: dict[str, object] = {
-                    "n_modes": n_modes,
+                    "n_samples": n_samples,
+                    "dt": params.dt,
+                    "z": steps * params.dz,
                     "steps": steps,
                     "backend": backend,
                     "first_call_seconds": first_call,
@@ -179,21 +186,24 @@ def main() -> None:
             for row in current_rows.values():
                 speedup = row.get("speedup_vs_numpy")
                 speedup_text = f"{speedup:.2f}x" if speedup is not None else "-"
-                print(f"N={n_modes:4d} steps={steps:6d} {row['backend']:5s} "
+                print(f"N={n_samples:4d} steps={steps:6d} {row['backend']:5s} "
                       f"first={row['first_call_seconds']:.4f}s "
                       f"median={row['median_seconds']:.4f}s speedup={speedup_text}",
                       flush=True)
 
-    parameters = asdict(LLEParams(d3=args.d3))
-    parameters.pop("n_modes")
+    parameters = asdict(example_params(beta3=args.beta3))
+    parameters.pop("n_samples")
+    parameters.pop("dt")
+    parameters["time_window"] = 20.0
     result = {
         "metadata": metadata,
         "parameters": parameters,
         "protocol": {
-            "input_and_output": "host angular-domain complex field",
-            "splitting": "first-order Lie; full linear/pump step followed by full Kerr step",
-            "gpu_linear_evolution": "precomputed exp(lambda*h), then zero-mode pump=NFh (first-order approximation); followed by IFFT and Kerr",
-            "gpu_state_domain": "angular",
+            "equation": "NLSE with dispersion, loss, Kerr and self-steepening",
+            "input_and_output": "host time-domain complex field",
+            "splitting": "first-order Lie: dispersion/loss, exact Kerr, then Euler self-steepening",
+            "gpu_linear_evolution": "exp(dz*(-alpha/2+i*sum((-1)^m*beta_m*w^m/m!))); nonlinear h=gamma0*dz",
+            "gpu_state_domain": "time",
             "first_call": "recorded separately; can include initialization, compilation, graph capture",
             "warm_repeats": args.repeats,
             "extra_warmups": args.extra_warmups,

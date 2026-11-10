@@ -1,21 +1,23 @@
-"""Numerical checks for the public, composable LLE solver.
+"""NLSE formula, convergence, input validation and GPU execution checks."""
 
-Run from the project root with ``python -m pytest tests/test_numerics.py``.
-GPU checks are skipped on machines without CUDA; the CPU reference still runs.
-"""
-
-from __future__ import annotations
+from dataclasses import replace
+from math import factorial
 
 import numpy as np
 import pytest
 
-from flashlle import LLEParams, initial_field, simulate_gpu, simulate_numpy
+from flashlle.solvers import (
+    NLSEParams, angular_frequencies, linear_coefficients, simulate_numpy, time_grid,
+)
 
 
-def _relative_l2(actual: np.ndarray, reference: np.ndarray) -> float:
-    actual = np.asarray(actual, dtype=np.complex128)
-    reference = np.asarray(reference, dtype=np.complex128)
-    return float(np.linalg.norm(actual - reference) / max(np.linalg.norm(reference), 1e-30))
+def smooth_field(n):
+    theta = 2 * np.pi * np.arange(n) / n
+    return ((0.6 + 0.1 * np.cos(theta)) * np.exp(0.2j * np.sin(2 * theta))).astype(np.complex128)
+
+
+def relative_l2(actual, expected):
+    return np.linalg.norm(actual - expected) / max(np.linalg.norm(expected), 1e-30)
 
 
 @pytest.fixture(scope="module")
@@ -23,273 +25,293 @@ def cuda():
     torch = pytest.importorskip("torch")
     pytest.importorskip("triton")
     if not torch.cuda.is_available():
-        pytest.skip("CUDA is required for the Triton operator checks")
+        pytest.skip("CUDA is required for the NLSE GPU checks")
     return torch
 
 
-def test_numpy_zero_steps_returns_initial_field() -> None:
-    params = LLEParams(n_modes=1024)
-    seed = initial_field(params)
-    final = simulate_numpy(seed, params, 0)
-    assert final.dtype == np.complex128
-    assert _relative_l2(final, seed) < 1e-13
+@pytest.fixture(scope="module")
+def simulate_gpu(cuda):
+    from flashlle.solvers.nlse import simulate_gpu
+
+    return simulate_gpu
 
 
-def test_linear_coefficients_scale_with_step_size() -> None:
-    from dataclasses import replace
-
-    from flashlle.gpu import linear_coefficients
-
-    params = LLEParams(n_modes=257, pump_f=1.8, h=0.005, d3=1e-4)
-    linear, pump = linear_coefficients(params)
-    double_linear, double_pump = linear_coefficients(replace(params, h=2 * params.h))
-    identity, zero_pump = linear_coefficients(replace(params, h=0))
-
-    np.testing.assert_allclose(double_linear, linear * linear, rtol=1e-14, atol=0)
-    np.testing.assert_allclose(double_pump, 2 * pump, rtol=1e-14, atol=0)
-    np.testing.assert_array_equal(identity, np.ones(params.n_modes, dtype=np.complex128))
-    assert zero_pump == 0
+@pytest.mark.parametrize("n", [31, 32])
+def test_time_and_frequency_grid_units(n):
+    params = NLSEParams(n_samples=n, dt=0.17)
+    t = time_grid(params)
+    np.testing.assert_allclose(np.diff(t), params.dt, rtol=1e-14)
+    assert t[n // 2] == 0
+    # A physical harmonic is differentiated with i*w, including negative modes.
+    w = angular_frequencies(params)
+    frequency = -3 * 2 * np.pi / (n * params.dt)
+    field = np.exp(1j * frequency * t)
+    derivative = np.fft.ifft(1j * w * np.fft.fft(field))
+    np.testing.assert_allclose(derivative, 1j * frequency * field, atol=5e-14)
 
 
-@pytest.fixture
-def uniform_step_case() -> tuple[LLEParams, np.ndarray, np.ndarray]:
-    """Uniform-field result for linear evolution, additive pumping, then Kerr."""
-    params = LLEParams(n_modes=128, pump_f=1.8, detuning_alpha=3.2, h=0.15)
-    initial = 0.8 + 0.6j
-    lam = -1.0 - 1j * params.detuning_alpha
-    after_linear = np.exp(lam * params.h) * initial + params.pump_f * params.h
-    expected = after_linear * np.exp(1j * params.h * abs(after_linear) ** 2)
-    return (
-        params,
-        np.full(params.n_modes, initial, dtype=np.complex128),
-        np.full(params.n_modes, expected, dtype=np.complex128),
+@pytest.mark.parametrize("n", [31, 32])
+@pytest.mark.parametrize("order", [2, 3, 4, 5, 6])
+def test_linear_dispersion_matches_equation_fourier_modes(n, order):
+    coefficients = {m: (0.012 if m == order else 0.0) for m in range(2, 7)}
+    params = NLSEParams(n_samples=n, dt=0.3, dz=0.003, alpha=0.2, gamma0=0,
+                        beta2=coefficients[2], beta3=coefficients[3], beta4=coefficients[4],
+                        beta_higher=(coefficients[5], coefficients[6]))
+    t = time_grid(params)
+    seed = np.zeros(n, dtype=np.complex128)
+    expected = seed.copy()
+    for mode, amplitude in [(0, 0.3), (3, 0.2 + 0.1j), (-3, -0.4j), (-(n // 2), 0.1j)]:
+        frequency = 2 * np.pi * mode / (n * params.dt)
+        wave = amplitude * np.exp(1j * frequency * t)
+        # Substitute d_T**m -> (i*w)**m directly into the user's PDE.
+        generator = -params.alpha / 2 - sum(
+            1j**(m - 1) * beta / factorial(m) * (1j * frequency)**m
+            for m, beta in coefficients.items()
+        )
+        seed += wave
+        expected += wave * np.exp(7 * params.dz * generator)
+    np.testing.assert_allclose(simulate_numpy(seed, params, 7), expected, rtol=2e-13, atol=3e-14)
+
+
+def test_linear_factors_with_optical_frequencies_and_higher_dispersion():
+    params = NLSEParams(n_samples=32, dt=1e-14, dz=0.01, beta2=-2e-26,
+                        beta3=1e-40, beta4=1e-54, beta_higher=(1e-68, 1e-82), gamma0=0)
+    w = angular_frequencies(params)
+    generator = -params.alpha / 2 - sum(
+        1j**(m - 1) * b / factorial(m) * (1j * w)**m
+        for m, b in enumerate((params.beta2, params.beta3, params.beta4, *params.beta_higher), 2)
     )
+    np.testing.assert_allclose(linear_coefficients(params), np.exp(params.dz * generator), atol=1e-14)
 
 
-def test_numpy_step_is_full_linear_then_kerr(uniform_step_case) -> None:
-    params, seed, expected = uniform_step_case
-
-    actual = simulate_numpy(seed, params, 1)
-
-    assert _relative_l2(actual, expected) < 1e-13
-
-
-def test_gpu_single_step_replays_graph_and_matches_full_step(uniform_step_case, cuda) -> None:
-    """A call shorter than graph_chunk must still replay a real CUDA Graph."""
-    from unittest.mock import patch
-
-    params, seed, expected = uniform_step_case
-
-    with patch.object(
-        cuda.cuda.CUDAGraph,
-        "replay",
-        autospec=True,
-        side_effect=cuda.cuda.CUDAGraph.replay,
-    ) as replay:
-        actual = simulate_gpu(seed, params, 1, graph_chunk=16)
-
-    replay.assert_called()
-
-    assert _relative_l2(actual, expected) < 1e-6
+def test_loss_is_power_attenuation():
+    params = NLSEParams(n_samples=64, dt=0.1, dz=0.02, alpha=0.7, beta2=0, gamma0=0)
+    seed = smooth_field(params.n_samples)
+    actual = simulate_numpy(seed, params, 11)
+    np.testing.assert_allclose(actual, seed * np.exp(-params.alpha * 11 * params.dz / 2), atol=2e-15)
+    assert np.sum(np.abs(actual)**2) / np.sum(np.abs(seed)**2) == pytest.approx(
+        np.exp(-params.alpha * 11 * params.dz), rel=1e-13)
 
 
-@pytest.mark.parametrize("steps", [1, 3])
-def test_lle_step_accepts_and_returns_angular_field(steps: int, cuda) -> None:
-    """Direct steps compose in the time domain and preserve the caller's input."""
-    from flashlle.gpu import linear_coefficients, lle_step
-
-    params = LLEParams(
-        n_modes=257, pump_f=1.8, detuning_alpha=3.2, d2=0.01, d3=1e-4, h=0.025
-    )
-    theta = np.linspace(-np.pi, np.pi, params.n_modes, endpoint=False)
-    seed = np.asarray(
-        0.6 + 0.2j + 0.3 * np.cos(3 * theta) + 0.15j * np.sin(5 * theta),
-        dtype=np.complex64,
-    )
-    initial_gpu = cuda.as_tensor(seed, device="cuda")
-    linear, pump = linear_coefficients(params)
-    linear_gpu = cuda.as_tensor(linear, dtype=cuda.complex64, device="cuda")
-
-    actual = initial_gpu
-    for _ in range(steps):
-        actual = lle_step(actual, linear_gpu, pump, params.h)
-
-    assert actual.shape == initial_gpu.shape
-    assert actual.dtype == cuda.complex64
-    assert actual.device == initial_gpu.device
-    assert _relative_l2(actual.cpu().numpy(), simulate_numpy(seed, params, steps)) < 1e-5
-    np.testing.assert_array_equal(initial_gpu.cpu().numpy(), seed)
+@pytest.mark.parametrize("gamma0", [0.0, 0.7, 2.3, -1.2])
+def test_pure_kerr_has_exact_phase_and_preserves_intensity(gamma0):
+    params = NLSEParams(n_samples=65, dt=0.1, dz=0.03, beta2=0, gamma0=gamma0, omega0=float("inf"))
+    seed = smooth_field(params.n_samples)
+    actual = simulate_numpy(seed, params, 9)
+    expected = seed * np.exp(1j * gamma0 * params.dz * 9 * np.abs(seed)**2)
+    np.testing.assert_allclose(actual, expected, rtol=3e-14, atol=3e-15)
+    np.testing.assert_allclose(np.abs(actual)**2, np.abs(seed)**2, rtol=3e-14)
 
 
-@pytest.mark.parametrize("n_modes", [1024, 2048, 4096])
-@pytest.mark.parametrize("d3", [0.0, 1e-4])
-@pytest.mark.parametrize("steps", [1, 16, 17])
-def test_gpu_matches_numpy(n_modes: int, d3: float, steps: int, cuda) -> None:
-    """Check one step, a full graph chunk, and its remainder at every target size."""
-    params = LLEParams(n_modes=n_modes, d3=d3)
-    seed = initial_field(params)
-    reference = simulate_numpy(seed, params, steps)
-    actual = simulate_gpu(seed, params, steps, graph_chunk=16)
-
-    assert reference.shape == actual.shape == (n_modes,)
-    assert reference.dtype == np.complex128
-    assert actual.dtype == np.complex64
-    assert np.isfinite(actual).all()
-    assert _relative_l2(actual, reference) < 1e-4
-
-    # Power and the entire modal power spectrum catch normalization mistakes.
-    reference_power = np.mean(np.abs(reference) ** 2)
-    actual_power = np.mean(np.abs(actual) ** 2)
-    assert abs(actual_power - reference_power) / reference_power < 1e-4
-    reference_spectrum = np.abs(np.fft.fft(reference)) ** 2
-    actual_spectrum = np.abs(np.fft.fft(actual)) ** 2
-    assert _relative_l2(actual_spectrum, reference_spectrum) < 1e-4
+def test_zero_field_has_no_external_source():
+    params = NLSEParams(n_samples=32, alpha=0.2, beta3=0.02, gamma0=2.0, omega0=3.0)
+    np.testing.assert_array_equal(simulate_numpy(np.zeros(32, dtype=complex), params, 10), 0)
 
 
-@pytest.mark.parametrize(
-    ("steps", "graph_chunk"),
-    [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (7, 4), (8, 4), (9, 4), (2, 1), (3, 1)],
-)
-def test_full_steps_match_numpy_at_graph_boundaries(
-    steps: int, graph_chunk: int, cuda
-) -> None:
-    """Check zero/one step and remainders before, at, and after graph chunk edges."""
-    params = LLEParams(
-        n_modes=128, pump_f=1.8, detuning_alpha=3.2, d2=0.01, d3=1e-4, h=0.025
-    )
-    theta = np.linspace(-np.pi, np.pi, params.n_modes, endpoint=False)
-    seed = 0.6 + 0.2j + 0.3 * np.cos(3 * theta) + 0.15j * np.sin(5 * theta)
-    reference = simulate_numpy(seed, params, steps)
-
-    actual = simulate_gpu(seed, params, steps, graph_chunk=graph_chunk)
-
-    assert actual.shape == seed.shape
-    assert actual.dtype == np.complex64
-    assert np.isfinite(actual).all()
-    assert _relative_l2(actual, reference) < 1e-5
+@pytest.mark.parametrize("mode", [3, -3, -16])
+def test_shock_sign_and_gamma_scaling_for_single_mode(mode):
+    params = NLSEParams(n_samples=32, dt=0.2, dz=0.004, beta2=0, gamma0=2.7, omega0=7.0)
+    frequency = 2 * np.pi * mode / (params.n_samples * params.dt)
+    seed = 0.6 * np.exp(1j * frequency * time_grid(params))
+    h = params.gamma0 * params.dz
+    rotated = seed * np.exp(1j * h * 0.6**2)
+    expected = rotated * (1 - 1j * h * frequency * 0.6**2 / params.omega0)
+    np.testing.assert_allclose(simulate_numpy(seed, params, 1), expected, atol=1e-14)
 
 
-@pytest.mark.parametrize(
-    "input_dtype",
-    [np.complex64, np.complex128],
-    ids=["complex64", "complex128"],
-)
-def test_gpu_accepts_sliced_initial_fields(input_dtype, cuda) -> None:
-    """Preserve positive-stride complex NumPy inputs when converting to CUDA."""
-    params = LLEParams(n_modes=128, h=0.025)
-    theta = np.linspace(-np.pi, np.pi, 2 * params.n_modes, endpoint=False)
-    source = (0.6 + 0.2j + 0.3 * np.cos(3 * theta) + 0.15j * np.sin(5 * theta)).astype(input_dtype)
-    original = source.copy()
+def test_uniform_field_full_step_orders_loss_before_nonlinearity():
+    params = NLSEParams(n_samples=32, dz=0.05, alpha=0.4, gamma0=1.8, omega0=5.0)
+    seed = np.full(32, 0.6 + 0.2j)
+    after_loss = seed * np.exp(-params.alpha * params.dz / 2)
+    expected = after_loss * np.exp(1j * params.gamma0 * params.dz * np.abs(after_loss)**2)
+    np.testing.assert_allclose(simulate_numpy(seed, params, 1), expected, atol=2e-15)
+
+
+def test_full_nlse_converges_to_independent_rk4_equation():
+    """Halving dz should halve global error for the existing Euler shock split."""
+    n, distance = 32, 0.2
+    params = NLSEParams(n_samples=n, dt=2 * np.pi / n, alpha=0.1,
+                        beta2=-0.2, beta3=0.03, beta4=0.002, gamma0=1.7, omega0=4.0)
+    seed = smooth_field(n)
+    w = angular_frequencies(params)
+    # Direct PDE right-hand side, independent of split-step coefficients/updates.
+    def rhs(field):
+        spectrum = np.fft.fft(field)
+        linear = -params.alpha * field / 2
+        for m, beta in enumerate((params.beta2, params.beta3, params.beta4), 2):
+            linear -= 1j**(m - 1) * beta / factorial(m) * np.fft.ifft((1j * w)**m * spectrum)
+        cubic = np.abs(field)**2 * field
+        return (linear + 1j * params.gamma0 * cubic
+                - params.gamma0 / params.omega0 * np.fft.ifft(1j * w * np.fft.fft(cubic)))
+
+    reference = seed.copy()
+    dt = distance / 2048
+    for _ in range(2048):
+        k1 = rhs(reference)
+        k2 = rhs(reference + dt * k1 / 2)
+        k3 = rhs(reference + dt * k2 / 2)
+        k4 = rhs(reference + dt * k3)
+        reference += dt * (k1 + 2*k2 + 2*k3 + k4) / 6
+    errors = [relative_l2(simulate_numpy(seed, replace(params, dz=distance / s), s), reference)
+              for s in (8, 16, 32)]
+    ratios = np.array(errors[:-1]) / errors[1:]
+    assert np.all((ratios > 1.8) & (ratios < 2.2)), (errors, ratios)
+    assert errors[-1] < 1e-3
+
+
+@pytest.mark.parametrize("dtype", [np.complex64, np.complex128])
+@pytest.mark.parametrize("steps,dz", [(0, 0.01), (4, 0.0)])
+def test_zero_propagation_returns_independent_copy(dtype, steps, dz):
+    params = NLSEParams(n_samples=32, dz=dz)
+    source = smooth_field(64).astype(dtype)
     seed = source[::2]
-
-    actual = simulate_gpu(seed, params, 5, graph_chunk=4)
-
-    assert actual.dtype == np.complex64
-    assert _relative_l2(actual, simulate_numpy(seed, params, 5)) < 1e-5
+    original = source.copy()
+    actual = simulate_numpy(seed, params, steps)
+    np.testing.assert_array_equal(actual, seed)
+    assert actual.dtype == np.complex128
+    assert not np.shares_memory(actual, source)
     np.testing.assert_array_equal(source, original)
 
 
-def test_graph_cache_restores_each_new_seed(cuda) -> None:
-    """A cached graph must not resume the preceding call's final field."""
-    params = LLEParams(n_modes=1024, d3=1e-4)
-    seed_a = initial_field(params)
-    theta = np.linspace(-np.pi, np.pi, params.n_modes, endpoint=False)
-    seed_b = seed_a * np.exp(0.07j * np.cos(3 * theta))
+@pytest.mark.parametrize("kwargs", [
+    {"n_samples": 0}, {"n_samples": 2.5}, {"n_samples": True}, {"dt": 0}, {"dt": float("nan")},
+    {"dz": -1}, {"dz": float("inf")}, {"alpha": -1}, {"gamma0": float("nan")},
+    {"omega0": 0}, {"omega0": -1}, {"omega0": float("nan")}, {"omega0": -float("inf")},
+    {"beta3": 1j}, {"beta_higher": (float("inf"),)},
+])
+def test_invalid_parameters_are_rejected(kwargs):
+    with pytest.raises(ValueError):
+        NLSEParams(**kwargs)
 
-    result_a = simulate_gpu(seed_a, params, 32, graph_chunk=16)
-    result_b = simulate_gpu(seed_b, params, 32, graph_chunk=16)
-    result_a_again = simulate_gpu(seed_a, params, 32, graph_chunk=16)
 
-    assert _relative_l2(result_b, result_a) > 1e-4
-    assert _relative_l2(result_b, simulate_numpy(seed_b, params, 32)) < 1e-4
-    assert _relative_l2(result_a_again, result_a) < 1e-7
+@pytest.mark.parametrize("steps", [-1, 1.5, True])
+def test_invalid_step_count(steps):
+    params = NLSEParams(n_samples=32)
+    with pytest.raises(ValueError, match="steps"):
+        simulate_numpy(smooth_field(32), params, steps)
+
+
+@pytest.mark.parametrize("seed,error", [
+    (np.ones(32), TypeError), (np.ones((2, 16), dtype=complex), ValueError),
+    (np.full(32, complex(float("nan"), 0)), ValueError),
+])
+def test_invalid_input_field(seed, error):
+    with pytest.raises(error):
+        simulate_numpy(seed, NLSEParams(n_samples=32), 1)
+
+
+@pytest.mark.parametrize("gamma0,omega0", [(0.0, 5.0), (2.3, 5.0), (2.3, float("inf"))])
+def test_torch_nlse_benchmark_baseline_on_cpu(gamma0, omega0):
+    torch = pytest.importorskip("torch")
+    from benchmarks._torch_reference import torch_nlse_step
+
+    params = NLSEParams(n_samples=65, dt=0.2, dz=0.003, alpha=0.1, beta3=0.02,
+                        gamma0=gamma0, omega0=omega0)
+    seed = smooth_field(65)
+    field = torch.tensor(seed, dtype=torch.complex64)
+    original = field.clone()
+    linear = torch.tensor(linear_coefficients(params), dtype=torch.complex64)
+    w = torch.tensor(angular_frequencies(params), dtype=torch.float64)
+    actual = torch_nlse_step(field, linear, w, params.gamma0 * params.dz, params.omega0)
+    torch.testing.assert_close(field, original, rtol=0, atol=0)
+    assert relative_l2(actual.numpy(), simulate_numpy(seed, params, 1)) < 2e-6
+
+
+@pytest.mark.parametrize("n", [31, 32, 257])
+@pytest.mark.parametrize("steps", [0, 1, 4, 5])
+@pytest.mark.parametrize("omega0", [5.0, float("inf")])
+def test_gpu_matches_numpy_at_graph_boundaries(n, steps, omega0, simulate_gpu):
+    params = NLSEParams(n_samples=n, dt=2*np.pi/n, dz=0.005, alpha=0.1,
+                        beta2=-0.2, beta3=0.01, beta4=0.001, gamma0=1.7, omega0=omega0,
+                        beta_higher=(0.0001,))
+    seed = smooth_field(n)
+    expected = simulate_numpy(seed, params, steps)
+    actual = simulate_gpu(seed, params, steps, graph_chunk=4)
+    assert actual.dtype == np.complex64
+    assert relative_l2(actual, expected) < 2e-5
+
+
+def test_gpu_single_step_uses_graph_and_preserves_seed(cuda, simulate_gpu):
+    from unittest.mock import patch
+
+    params = NLSEParams(n_samples=32, dt=0.2, dz=0.01, gamma0=2.0, omega0=5.0)
+    seed = smooth_field(32)
+    original = seed.copy()
+    with patch.object(cuda.cuda.CUDAGraph, "replay", autospec=True,
+                      side_effect=cuda.cuda.CUDAGraph.replay) as replay:
+        actual = simulate_gpu(seed, params, 1, graph_chunk=16)
+    replay.assert_called_once()
+    np.testing.assert_array_equal(seed, original)
+    assert relative_l2(actual, simulate_numpy(seed, params, 1)) < 2e-6
+
+
+def test_nlse_step_and_torch_baseline_match_reference(cuda):
+    from benchmarks._torch_reference import torch_nlse_step
+    from flashlle.solvers.nlse import nlse_step
+
+    params = NLSEParams(n_samples=65, dt=0.2, gamma0=2.3, beta3=0.02, omega0=8.0)
+    seed = smooth_field(65)
+    field = cuda.tensor(seed, dtype=cuda.complex64, device="cuda")
+    original = field.clone()
+    linear = cuda.tensor(linear_coefficients(params), dtype=cuda.complex64, device="cuda")
+    w = cuda.tensor(angular_frequencies(params), dtype=cuda.float64, device="cuda")
+    for step in (nlse_step, torch_nlse_step):
+        actual = step(field, linear, w, params.gamma0 * params.dz, params.omega0)
+        cuda.testing.assert_close(field, original, rtol=0, atol=0)
+        assert relative_l2(actual.cpu().numpy(), simulate_numpy(seed, params, 1)) < 2e-6
+
+
+@pytest.mark.parametrize("dtype", [np.complex64, np.complex128])
+def test_gpu_accepts_sliced_inputs(dtype, simulate_gpu):
+    source = smooth_field(128).astype(dtype)
+    seed = source[::2]
+    original = source.copy()
+    params = NLSEParams(n_samples=64, dt=0.2)
+    actual = simulate_gpu(seed, params, 5, graph_chunk=4)
+    assert relative_l2(actual, simulate_numpy(seed, params, 5)) < 2e-5
+    np.testing.assert_array_equal(source, original)
+
+
+def test_graph_cache_separates_parameters_and_restores_each_seed(simulate_gpu):
+    from flashlle.solvers.nlse import clear_graph_cache
+
+    base = NLSEParams(n_samples=64, dt=0.2, dz=0.01)
+    seed = smooth_field(64)
+    clear_graph_cache()
+    reference = simulate_gpu(seed, base, 5, graph_chunk=4)
+    for params in (replace(base, gamma0=0), replace(base, omega0=2), replace(base, dt=0.3),
+                   replace(base, beta3=0.04), replace(base, alpha=0.2),
+                   replace(base, beta_higher=(0.003,))):
+        changed_seed = seed * 0.8
+        actual = simulate_gpu(changed_seed, params, 5, graph_chunk=4)
+        assert relative_l2(actual, simulate_numpy(changed_seed, params, 5)) < 2e-5
+    again = simulate_gpu(seed, base, 5, graph_chunk=4)
+    np.testing.assert_array_equal(again, reference)
+    clear_graph_cache()
+
+
+@pytest.mark.parametrize("chunk", [0, -1, 1.5, True])
+def test_invalid_graph_chunks(chunk, simulate_gpu):
+    with pytest.raises(ValueError, match="graph_chunk"):
+        simulate_gpu(smooth_field(32), NLSEParams(n_samples=32), 0, graph_chunk=chunk)
 
 
 @pytest.mark.parametrize("in_place", [False, True], ids=["out-of-place", "in-place"])
-def test_graph_stepper_preserves_inputs_and_previous_outputs(in_place: bool, cuda) -> None:
-    """Repeated runs keep GPU results independent across graph and remainder paths."""
+def test_graph_stepper_preserves_inputs_and_previous_outputs(in_place, cuda):
     from functools import partial
     from operator import methodcaller
-
-    from flashlle.gpu import CudaGraphStepper
+    from flashlle.solvers.nlse import CudaGraphStepper
 
     increment = 1 + 2j
     step = methodcaller("add_", increment) if in_place else partial(cuda.add, other=increment)
     seed_a = cuda.arange(17, dtype=cuda.float32, device="cuda").to(cuda.complex64) + 2j
     seed_b = seed_a * (-1 + 1j)
     original_a, original_b = seed_a.clone(), seed_b.clone()
-
     runner = CudaGraphStepper(seed_a, step, chunk=4)
-    cuda.testing.assert_close(seed_a, original_a, rtol=0, atol=0)
-
-    cases = [
-        (seed_a, original_a, 0),
-        (seed_b, original_b, 1),
-        (seed_a, original_a, 4),
-        (seed_b, original_b, 5),
-    ]
-    # Keep the original GPU tensors until later replays could have overwritten them.
+    cases = [(seed_a, original_a, 0), (seed_b, original_b, 1),
+             (seed_a, original_a, 4), (seed_b, original_b, 5)]
     results = [runner.run(seed, steps) for seed, _, steps in cases]
     for actual, (_, original, steps) in zip(results, cases):
         cuda.testing.assert_close(actual, original + steps * increment, rtol=0, atol=0)
     cuda.testing.assert_close(seed_a, original_a, rtol=0, atol=0)
     cuda.testing.assert_close(seed_b, original_b, rtol=0, atol=0)
-
-
-def test_fused_pointwise_operators_in_place(cuda) -> None:
-    """Verify the independent building blocks against explicit NumPy formulas."""
-    from flashlle.operators import kerr_, linear_and_pump_
-
-    rng = np.random.default_rng(20261020)
-    n = 1024
-    spectrum = (rng.normal(size=n) + 1j * rng.normal(size=n)).astype(np.complex64)
-    linear = np.exp((-0.002 - 0.01j) * np.arange(n) / n).astype(np.complex64)
-    pump = 0.125 - 0.375j
-
-    spectrum_gpu = cuda.as_tensor(spectrum.copy(), device="cuda")
-    linear_gpu = cuda.as_tensor(linear, device="cuda")
-    assert linear_and_pump_(spectrum_gpu, linear_gpu, pump) is spectrum_gpu
-    expected = spectrum.astype(np.complex128) * linear.astype(np.complex128)
-    expected[0] += pump
-    assert _relative_l2(spectrum_gpu.cpu().numpy(), expected) < 2e-6
-
-    angular = (0.5 * rng.normal(size=n) + 0.5j * rng.normal(size=n)).astype(np.complex64)
-    angular_gpu = cuda.as_tensor(angular.copy(), device="cuda")
-    h = 0.005
-    assert kerr_(angular_gpu, h) is angular_gpu
-    expected_kerr = angular * np.exp(1j * h * np.abs(angular) ** 2)
-    assert _relative_l2(angular_gpu.cpu().numpy(), expected_kerr) < 2e-6
-
-
-@pytest.mark.parametrize(
-    ("h", "pump_source"),
-    [(0.0, 1.8), (1e-9, 0.6 - 0.8j), (0.15, 0.6 - 0.8j)],
-    ids=["zero-step", "tiny-step", "complex-pump"],
-)
-def test_linear_and_pump_accepts_precomputed_coefficients(
-    h: float, pump_source: complex, cuda
-) -> None:
-    """Apply precomputed zero/tiny steps and complex pumping across a kernel tail."""
-    from flashlle.operators import linear_and_pump_
-
-    rng = np.random.default_rng(20261021)
-    n = 257
-    spectrum = (rng.normal(size=n) + 1j * rng.normal(size=n)).astype(np.complex64)
-    # Isolate the pump so a lost tiny increment cannot hide beneath the initial field.
-    spectrum[0] = 0
-    generator = np.asarray((-0.2 - 0.7j) * (1 + np.arange(n) / n), dtype=np.complex128)
-    linear = np.exp(generator * h).astype(np.complex64)
-    pump = complex(pump_source * h)
-    linear_gpu = cuda.as_tensor(linear, device="cuda")
-
-    spectrum_gpu = cuda.as_tensor(spectrum.copy(), device="cuda")
-    assert linear_and_pump_(spectrum_gpu, linear_gpu, pump) is spectrum_gpu
-    actual = spectrum_gpu.cpu().numpy()
-
-    expected = spectrum.astype(np.complex128) * np.exp(generator * h)
-    expected[0] += pump
-    np.testing.assert_allclose(actual, expected, rtol=3e-6, atol=3e-7)
-    np.testing.assert_allclose(actual[0], expected[0], rtol=3e-6, atol=0)
-    if h == 0:
-        np.testing.assert_array_equal(actual, spectrum)
-    np.testing.assert_array_equal(linear_gpu.cpu().numpy(), linear)

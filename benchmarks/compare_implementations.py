@@ -1,4 +1,4 @@
-"""Compare Torch/Triton LLE operators with and without CUDA Graphs on one GPU.
+"""Compare Torch/Triton NLSE operators with and without CUDA Graphs on one GPU.
 
 All four variants use complex64 fields, the same precomputed coefficients and
 cuFFT transforms. Timings include input reset and an independent output clone;
@@ -21,15 +21,17 @@ from statistics import median
 from typing import Callable
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 import numpy as np
 import torch
 import triton
 
-from _torch_reference import torch_lle_step
-from flashlle import LLEParams, initial_field, linear_coefficients
-from flashlle.gpu import CudaGraphStepper, lle_step
+from _torch_reference import torch_nlse_step
+from examples.run_tod import example_params, initial_field
+from flashlle.solvers import angular_frequencies, linear_coefficients
+from flashlle.solvers.nlse import CudaGraphStepper, nlse_step
 
 
 VARIANTS = ("torch_eager", "triton_eager", "torch_graph", "triton_graph")
@@ -69,7 +71,7 @@ def accuracy(actual: np.ndarray, reference: np.ndarray) -> dict[str, float | boo
             or reference.dtype != np.complex64):
         raise AssertionError("Unexpected output shape or dtype")
     if not np.isfinite(actual).all() or not np.isfinite(reference).all():
-        raise FloatingPointError("Non-finite LLE output")
+        raise FloatingPointError("Non-finite NLSE output")
     actual128 = actual.astype(np.complex128)
     reference128 = reference.astype(np.complex128)
     delta = actual128 - reference128
@@ -83,6 +85,7 @@ def accuracy(actual: np.ndarray, reference: np.ndarray) -> dict[str, float | boo
 
 def source_hashes() -> dict[str, str]:
     paths = sorted((PROJECT_ROOT / "src" / "flashlle").rglob("*.py"))
+    paths.append(PROJECT_ROOT / "examples" / "run_tod.py")
     script = Path(__file__).resolve()
     paths.extend([script, script.with_name("_torch_reference.py")])
     return {
@@ -97,17 +100,17 @@ def save_result(path: Path, result: dict) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--modes", nargs="+", type=int, default=[1024, 2048, 4096])
+    parser.add_argument("--samples", "--modes", dest="samples", nargs="+", type=int, default=[1024, 2048, 4096])
     parser.add_argument("--steps", nargs="+", type=int, default=[100, 1000])
     parser.add_argument("--graph-chunk", type=int, default=16)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--relative-l2-tolerance", type=float, default=1e-3,
                         help="maximum field relative L2 error between Torch and Triton")
     parser.add_argument("--output", type=Path,
-                        default=PROJECT_ROOT / "results" / "compare_implementations.json")
+                        default=PROJECT_ROOT / "results" / "compare_implementations_nlse.json")
     args = parser.parse_args()
-    if min(args.modes) < 2 or min(args.steps) < 1:
-        parser.error("modes must be >= 2 and steps must be positive")
+    if min(args.samples) < 2 or min(args.steps) < 1:
+        parser.error("samples must be >= 2 and steps must be positive")
     if args.graph_chunk < 1 or args.repeats < 1:
         parser.error("graph-chunk and repeats must be positive")
     if not np.isfinite(args.relative_l2_tolerance) or args.relative_l2_tolerance <= 0:
@@ -121,8 +124,10 @@ def main() -> None:
         raise RuntimeError("This comparison requires CUDA")
     device = torch.device("cuda", torch.cuda.current_device())
     properties = torch.cuda.get_device_properties(device)
-    parameters = asdict(LLEParams())
-    parameters.pop("n_modes")
+    parameters = asdict(example_params())
+    parameters.pop("n_samples")
+    parameters.pop("dt")
+    parameters["time_window"] = 20.0
     result = {
         "metadata": {
             "started_utc": datetime.now(timezone.utc).isoformat(),
@@ -140,20 +145,21 @@ def main() -> None:
         },
         "parameters": parameters,
         "protocol": {
-            "modes": args.modes,
+            "equation": "NLSE with dispersion, loss, Kerr and self-steepening",
+            "samples": args.samples,
             "steps": args.steps,
             "variants": list(VARIANTS),
             "repeats": args.repeats,
             "graph_chunk": args.graph_chunk,
-            "state_domain": "angular",
+            "state_domain": "time",
             "dtype": "complex64",
             "input_and_output": "GPU resident; identical seed and coefficients for every variant",
-            "splitting": "FFT -> linear/pump -> IFFT -> Kerr, first-order Lie splitting",
-            "linear_evolution": "precomputed exp(lambda*h), then zero-mode pump=N*F*h",
+            "splitting": "FFT -> dispersion/loss -> IFFT -> Kerr -> Euler shock; first-order Lie",
+            "linear_evolution": "exp(dz*(-alpha/2+i*sum((-1)^m*beta_m*w^m/m!))); nonlinear h=gamma0*dz",
             "torch_operators": "ordinary PyTorch pointwise operations, without torch.compile",
-            "triton_operators": "production fused linear_and_pump_ and kerr_",
+            "triton_operators": "production disp_and_loss_ and kerr_shock_",
             "timing": "perf_counter with device synchronization before and after each run",
-            "included": "input state.copy_, all LLE steps, output.clone, final synchronization",
+            "included": "input state.copy_, all NLSE steps, output.clone, final synchronization",
             "excluded": "coefficient preparation, host transfers, persistent input-state allocation, warmup, graph capture, accuracy checks",
             "graph_execution": "production CudaGraphStepper; effective chunk=min(graph_chunk, steps); eager remainder",
             "graph_boundary_copy": "captured copy into persistent state after every graph chunk is included",
@@ -167,13 +173,16 @@ def main() -> None:
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    for n_modes in args.modes:
-        params = LLEParams(n_modes=n_modes)
+    for n_samples in args.samples:
+        params = example_params(n_samples)
         seed_gpu = torch.as_tensor(initial_field(params), dtype=torch.complex64, device=device)
-        linear, pump = linear_coefficients(params)
+        linear = linear_coefficients(params)
         linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
-        torch_step = partial(torch_lle_step, linear=linear_gpu, pump=pump, h=params.h)
-        triton_step = partial(lle_step, linear=linear_gpu, pump=pump, h=params.h)
+        w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
+        torch_step = partial(torch_nlse_step, linear=linear_gpu, w=w,
+                             h=params.gamma0 * params.dz, omega0=params.omega0)
+        triton_step = partial(nlse_step, linear=linear_gpu, w=w,
+                              h=params.gamma0 * params.dz, omega0=params.omega0)
 
         for steps in args.steps:
             chunk = min(args.graph_chunk, steps)
@@ -223,7 +232,9 @@ def main() -> None:
             }
             medians = {variant: timing["median_seconds"] for variant, timing in timings.items()}
             result["rows"].append({
-                "n_modes": n_modes,
+                "n_samples": n_samples,
+                "dt": params.dt,
+                "z": steps * params.dz,
                 "steps": steps,
                 "effective_graph_chunk": chunk,
                 "graph_replays": steps // chunk,
@@ -243,9 +254,9 @@ def main() -> None:
             })
             save_result(args.output, result)
             if failures:
-                raise AssertionError(f"N={n_modes}, steps={steps}: " + "; ".join(failures))
+                raise AssertionError(f"N={n_samples}, steps={steps}: " + "; ".join(failures))
             timings_text = " ".join(f"{name}={medians[name] * 1000:.3f}ms" for name in VARIANTS)
-            print(f"N={n_modes} steps={steps} {timings_text}", flush=True)
+            print(f"N={n_samples} steps={steps} {timings_text}", flush=True)
             del operations, operation, torch_runner, triton_runner
 
     result["metadata"]["finished_utc"] = datetime.now(timezone.utc).isoformat()

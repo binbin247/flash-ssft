@@ -23,28 +23,31 @@ from pathlib import Path
 from statistics import median
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 import numpy as np
 import torch
 import triton
 
-from flashlle import LLEParams, initial_field
-from flashlle.gpu import clear_graph_cache, linear_coefficients, lle_step, simulate_gpu
-from flashlle._validation import check_input
+from examples.run_tod import example_params, initial_field
+from flashlle.solvers import angular_frequencies, linear_coefficients
+from flashlle.solvers.nlse import clear_graph_cache, nlse_step, simulate_gpu
+from flashlle.solvers._validation import check_input
 
 
 def _simulate_eager(seed, params, steps):
-    """Run the same LLE steps without CUDA Graphs for this benchmark only."""
-    field = check_input(seed, params.n_modes, steps)
+    """Run the same NLSE steps without CUDA Graphs for this benchmark only."""
+    field = check_input(seed, params.n_samples, steps)
     device = torch.device("cuda", torch.cuda.current_device())
     angular = torch.as_tensor(field, dtype=torch.complex64, device=device).contiguous()
     if steps == 0:
         return angular.cpu().numpy().copy()
-    linear, pump = linear_coefficients(params)
+    linear = linear_coefficients(params)
     linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
+    w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
     for _ in range(steps):
-        angular = lle_step(angular, linear_gpu, pump, params.h)
+        angular = nlse_step(angular, linear_gpu, w, params.gamma0 * params.dz, params.omega0)
     return angular.cpu().numpy().copy()
 
 
@@ -88,6 +91,7 @@ def snapshot():
 def source_hashes(*benchmark_paths: str) -> dict[str, str]:
     """Record all solver modules, including operators added as separate files."""
     paths = sorted((PROJECT_ROOT / "src" / "flashlle").rglob("*.py"))
+    paths.append(PROJECT_ROOT / "examples" / "run_tod.py")
     paths.extend(PROJECT_ROOT / name for name in benchmark_paths)
     return {
         path.relative_to(PROJECT_ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -97,24 +101,26 @@ def source_hashes(*benchmark_paths: str) -> dict[str, str]:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--modes", nargs="+", type=int, default=[1024, 2048, 4096])
+    parser.add_argument("--samples", "--modes", dest="samples", nargs="+", type=int, default=[1024, 2048, 4096])
     parser.add_argument("--steps", nargs="+", type=int,
-                        default=[15, 16, 17, 100, 1000, 10000, 100000])
+                        default=[0, 1, 15, 16, 17, 100, 1000])
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--graph-chunk", type=int, default=16)
     parser.add_argument("--output", type=Path,
-                        default=PROJECT_ROOT / "results" / "compare_graph.json")
+                        default=PROJECT_ROOT / "results" / "compare_graph_nlse.json")
     args = parser.parse_args()
-    if any(n < 2 for n in args.modes) or any(s < 0 for s in args.steps):
-        parser.error("modes must be >= 2 and steps must be >= 0")
+    if any(n < 2 for n in args.samples) or any(s < 0 for s in args.steps):
+        parser.error("samples must be >= 2 and steps must be >= 0")
     if args.repeats < 1 or args.graph_chunk < 1:
         parser.error("repeats and graph-chunk must be positive")
     if not torch.cuda.is_available():
         raise RuntimeError("This comparison requires CUDA")
 
     variants = ["no_graph", "graph_cached", "graph_fresh"]
-    params_dict = asdict(LLEParams())
-    params_dict.pop("n_modes")
+    params_dict = asdict(example_params())
+    params_dict.pop("n_samples")
+    params_dict.pop("dt")
+    params_dict["time_window"] = 20.0
     result = {
         "metadata": {
             "started_utc": datetime.now(timezone.utc).isoformat(),
@@ -130,11 +136,12 @@ def main():
         },
         "parameters": params_dict,
         "protocol": {
-            "input_and_output": "host angular-domain complex field",
+            "equation": "NLSE with dispersion, loss, Kerr and self-steepening",
+            "input_and_output": "host time-domain complex field",
             "timing": "perf_counter with CUDA synchronization before and after",
-            "splitting": "first-order Lie; full linear/pump step followed by full Kerr step",
-            "gpu_linear_evolution": "precomputed exp(lambda*h), then zero-mode pump=NFh (first-order approximation); followed by IFFT and Kerr",
-            "state_domain": "angular",
+            "splitting": "first-order Lie: dispersion/loss, exact Kerr, then Euler self-steepening",
+            "gpu_linear_evolution": "exp(dz*(-alpha/2+i*sum((-1)^m*beta_m*w^m/m!))); nonlinear h=gamma0*dz",
+            "state_domain": "time",
             "gpu_dtype": "complex64",
             "graph_chunk": args.graph_chunk,
             "repeats": args.repeats,
@@ -154,9 +161,9 @@ def main():
     def save():
         args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
 
-    for n_modes in args.modes:
+    for n_samples in args.samples:
         clear_graph_cache()
-        params = LLEParams(n_modes=n_modes)
+        params = example_params(n_samples)
         seed = initial_field(params)
         warmup_steps = max(1000, args.graph_chunk)
         warmup = {}
@@ -164,7 +171,7 @@ def main():
             elapsed, _ = timed(seed, params, warmup_steps,
                                eager_baseline=eager_baseline, chunk=args.graph_chunk)
             warmup["no_graph" if eager_baseline else "graph"] = elapsed
-        result["warmup_seconds"][str(n_modes)] = warmup
+        result["warmup_seconds"][str(n_samples)] = warmup
 
         for steps in args.steps:
             samples = {variant: [] for variant in variants}
@@ -214,7 +221,9 @@ def main():
                     "max_absolute_error": max(e["max_absolute_error"] for e in errors[variant]),
                 }
             result["rows"].append({
-                "n_modes": n_modes,
+                "n_samples": n_samples,
+                "dt": params.dt,
+                "z": steps * params.dz,
                 "steps": steps,
                 "graph_active": steps > 0,
                 "effective_graph_chunk": min(args.graph_chunk, steps),
@@ -225,7 +234,7 @@ def main():
             cached = summary["graph_cached"]
             fresh = summary["graph_fresh"]
             print(
-                f"N={n_modes:5d} steps={steps:7d} "
+                f"N={n_samples:5d} steps={steps:7d} "
                 f"no_graph={baseline * 1000:10.3f}ms "
                 f"cached={cached['median_seconds'] * 1000:10.3f}ms "
                 f"fresh={fresh['median_seconds'] * 1000:10.3f}ms "

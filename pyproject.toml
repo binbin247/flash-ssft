@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "flashlle"
 version = "0.1.0"
-description = "Composable split-step LLE solver with fused Triton pointwise operators"
+description = "Split-step NLSE solver with dispersion, Kerr nonlinearity and self-steepening"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "torch>=2.3", "triton>=3.0"]
+dependencies = ["numpy>=1.24"]
 
 [project.optional-dependencies]
-gpu = []
+gpu = ["torch>=2.3", "triton>=3.0"]
 dev = ["pytest>=8"]
 benchmark = ["matplotlib>=3.7"]
 
@@ -20,3 +20,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src", "."]

@@ -1,8 +1,7 @@
-"""cuFFT plus fused Triton pointwise LLE steps and CUDA Graph execution."""
+"""NLSE propagation using existing dispersion/loss and Kerr/shock operators."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from functools import partial
 from threading import RLock
 from typing import Callable
@@ -10,55 +9,40 @@ from typing import Callable
 import numpy as np
 import torch
 
-from ._validation import check_input
-from .operators import kerr_, linear_and_pump_
+from ._validation import check_graph_chunk, check_input, check_steps
+from .params import NLSEParams, angular_frequencies, linear_coefficients
+from ..operators import disp_and_loss_, kerr_shock_
 
 
-@dataclass(frozen=True)
-class LLEParams:
-    n_modes: int = 1024
-    pump_f: float = 2.5
-    detuning_alpha: float = 5.0
-    d2: float = 0.02
-    h: float = 0.005
-    d3: float = 0.0
-
-def linear_coefficients(params: LLEParams) -> tuple[np.ndarray, complex]:
-    """Precompute linear factors and the first-order zero-mode pump increment N*F*h."""
-    n = params.n_modes
-    mu = np.fft.fftfreq(n, d=1.0 / n)
-    lam = -1.0 - 1j * (
-        params.detuning_alpha
-        + params.d2 * mu**2 / 2.0
-        + params.d3 * mu**3 / 6.0
-    )
-    h = params.h
-    linear = np.exp(lam * h)
-    pump = n * params.pump_f * h
-    return linear, complex(pump)
-
-def lle_step(
-    angular: torch.Tensor,
+def nlse_step(
+    field: torch.Tensor,
     linear: torch.Tensor,
-    pump: complex,
+    w: torch.Tensor,
     h: float,
+    omega0: float,
 ) -> torch.Tensor:
-    """Advance a time-domain field via FFT -> linear/pump -> IFFT -> Kerr."""
-    spectrum = torch.fft.fft(angular)
-    linear_and_pump_(spectrum, linear, pump)
-    angular = torch.fft.ifft(spectrum)
-    return kerr_(angular, h)
+    """One Lie step: linear propagation, exact Kerr, then Euler self-steepening.
+
+    linear contains the full dz propagation factors, w=2*pi*fftfreq(N, dt),
+    and h=gamma0*dz scales both nonlinear terms. Returns a new time-domain
+    field and preserves the caller's input. omega0=+inf disables shock.
+    """
+    spectrum = torch.fft.fft(field)
+    disp_and_loss_(spectrum, linear)
+    field = torch.fft.ifft(spectrum)
+    return kerr_shock_(field, w, h, omega0)
 
 
 class CudaGraphStepper:
     """Replay GPU step chunks; use each instance sequentially on one CUDA stream."""
 
     def __init__(
-            self,
-            seed: torch.Tensor,
-            step: Callable[[torch.Tensor],torch.Tensor],
-            chunk: int
-            ):
+        self,
+        seed: torch.Tensor,
+        step: Callable[[torch.Tensor], torch.Tensor],
+        chunk: int,
+    ):
+        check_graph_chunk(chunk)
         self.step = step
         self.chunk = chunk
         self.state = seed.clone()
@@ -79,8 +63,10 @@ class CudaGraphStepper:
             self.state.copy_(next_state)
 
     def run(self, initial_state: torch.Tensor, steps: int) -> torch.Tensor:
-        if initial_state.shape != self.state.shape or initial_state.device != self.state.device:
-            raise ValueError("initial_state shape and device must match the captured graph")
+        check_steps(steps)
+        if (initial_state.shape != self.state.shape or initial_state.device != self.state.device
+                or initial_state.dtype != self.state.dtype):
+            raise ValueError("initial_state shape, device and dtype must match the captured graph")
 
         self.state.copy_(initial_state)
         for _ in range(steps // self.chunk):
@@ -91,7 +77,7 @@ class CudaGraphStepper:
         return state.clone()
 
 
-_GRAPH_CACHE: dict[tuple[LLEParams, int, int], CudaGraphStepper] = {}
+_GRAPH_CACHE: dict[tuple[NLSEParams, int, int], CudaGraphStepper] = {}
 _GRAPH_CACHE_LOCK = RLock()
 
 
@@ -102,28 +88,30 @@ def clear_graph_cache() -> None:
 
 
 def simulate_gpu(
-    psi0: np.ndarray,
-    params: LLEParams,
+    a0: np.ndarray,
+    params: NLSEParams,
     steps: int,
     *,
     graph_chunk: int = 16,
 ) -> np.ndarray:
-    """Evolve a time-domain field on the GPU using cached CUDA Graphs."""
-    field = check_input(psi0, params.n_modes, steps)
+    """Propagate to z=steps*dz; return a new NumPy complex64 time-domain field."""
+    field = check_input(a0, params.n_samples, steps)
+    check_graph_chunk(graph_chunk)
+    if steps == 0 or params.dz == 0:
+        return np.array(field, dtype=np.complex64, copy=True)
 
     device = torch.device("cuda", torch.cuda.current_device())
     field_gpu = torch.as_tensor(field, dtype=torch.complex64, device=device).contiguous()
-    if steps == 0:
-        return field_gpu.cpu().numpy().copy()
-
     graph_chunk = min(graph_chunk, steps)
     key = (params, graph_chunk, device.index)
     with _GRAPH_CACHE_LOCK:
         runner = _GRAPH_CACHE.get(key)
         if runner is None:
-            linear, pump = linear_coefficients(params)
+            linear = linear_coefficients(params)
             linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
-            step = partial(lle_step, linear=linear_gpu, pump=pump, h=params.h)
+            w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
+            step = partial(nlse_step, linear=linear_gpu, w=w,
+                           h=params.gamma0 * params.dz, omega0=params.omega0)
             runner = CudaGraphStepper(field_gpu, step, graph_chunk)
             _GRAPH_CACHE[key] = runner
         angular = runner.run(field_gpu, steps)
