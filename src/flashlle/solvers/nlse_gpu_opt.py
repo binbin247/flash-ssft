@@ -27,10 +27,12 @@ def nlse_step(
     and h=gamma0*dz scales both nonlinear terms. Returns a new time-domain
     field and preserves the caller's input. omega0=+inf disables shock.
     """
+    # Keep the linear operator in the frequency domain, where dispersion and
+    # loss are represented by one elementwise propagation factor.
     spectrum = torch.fft.fft(field)
     disp_and_loss_(spectrum, linear)
-    field = torch.fft.ifft(spectrum)
-    return kerr_shock_(field, w, h, omega0)
+    # The nonlinear operator works in the time domain and returns a new field.
+    return kerr_shock_(torch.fft.ifft(spectrum), w, h, omega0)
 
 
 class CudaGraphStepper:
@@ -48,7 +50,8 @@ class CudaGraphStepper:
         self.state = seed.clone()
         self.graph = torch.cuda.CUDAGraph()
 
-        # Warm up on a temporary stream before automatic graph capture.
+        # Warm up on a temporary stream before automatic graph capture. This
+        # lets CUDA initialize the kernels and memory allocations first.
         torch.cuda.synchronize(self.state.device)
         with torch.cuda.stream(torch.cuda.Stream(device=self.state.device)):
             scratch = self.state
@@ -56,6 +59,8 @@ class CudaGraphStepper:
                 scratch = step(scratch)
         torch.cuda.synchronize(self.state.device)
 
+        # Capture one fixed-size batch. The graph reuses self.state as its
+        # input and output buffer on every replay.
         with torch.cuda.graph(self.graph):
             next_state = self.state
             for _ in range(chunk):
@@ -68,15 +73,20 @@ class CudaGraphStepper:
                 or initial_state.dtype != self.state.dtype):
             raise ValueError("initial_state shape, device and dtype must match the captured graph")
 
+        # Restore the caller's input before replaying the captured graph.
         self.state.copy_(initial_state)
-        for _ in range(steps // self.chunk):
+        # A graph always advances exactly self.chunk steps, so handle the
+        # complete chunks with replay and execute the remaining steps normally.
+        full_chunks, remainder = divmod(steps, self.chunk)
+        for _ in range(full_chunks):
             self.graph.replay()
         state = self.state
-        for _ in range(steps % self.chunk):
+        for _ in range(remainder):
             state = self.step(state)
         return state.clone()
 
 
+# A runner owns mutable CUDA buffers, so cached runners must be used serially.
 _GRAPH_CACHE: dict[tuple[NLSEParams, int, int], CudaGraphStepper] = {}
 _GRAPH_CACHE_LOCK = RLock()
 
@@ -100,13 +110,18 @@ def simulate_gpu(
     if steps == 0 or params.dz == 0:
         return np.array(field, dtype=np.complex64, copy=True)
 
+    # Keep the propagation state on one CUDA device for the whole run.
     device = torch.device("cuda", torch.cuda.current_device())
     field_gpu = torch.as_tensor(field, dtype=torch.complex64, device=device).contiguous()
+    # The captured graph has a fixed length; a shorter graph avoids doing
+    # unnecessary work when the requested propagation is shorter than chunk.
     graph_chunk = min(graph_chunk, steps)
     key = (params, graph_chunk, device.index)
     with _GRAPH_CACHE_LOCK:
         runner = _GRAPH_CACHE.get(key)
         if runner is None:
+            # These tensors and the bound step function become part of the
+            # cached graph and are reused for later calls with the same key.
             linear = linear_coefficients(params)
             linear_gpu = torch.as_tensor(linear, dtype=torch.complex64, device=device)
             w = torch.as_tensor(angular_frequencies(params), dtype=torch.float64, device=device)
@@ -114,5 +129,5 @@ def simulate_gpu(
                            h=params.gamma0 * params.dz, omega0=params.omega0)
             runner = CudaGraphStepper(field_gpu, step, graph_chunk)
             _GRAPH_CACHE[key] = runner
-        angular = runner.run(field_gpu, steps)
-        return angular.cpu().numpy().copy()
+        final_field = runner.run(field_gpu, steps)
+        return final_field.cpu().numpy().copy()

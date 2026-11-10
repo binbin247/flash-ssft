@@ -23,10 +23,8 @@ def simulate_numpy(a0: np.ndarray, params: NLSEParams, steps: int) -> np.ndarray
     h = params.gamma0 * params.dz
     for _ in range(steps):
         field = np.fft.ifft(np.fft.fft(field) * linear)
-        if h != 0:
-            field *= np.exp(1j * h * np.abs(field)**2)
-            if np.isfinite(params.omega0):
-                cubic = np.abs(field)**2 * field
-                derivative = np.fft.ifft((1j * w / params.omega0) * np.fft.fft(cubic))
-                field -= h * derivative
+        field *= np.exp(1j * h * np.abs(field)**2)
+        cubic = np.abs(field)**2 * field
+        derivative = np.fft.ifft((1j * w / params.omega0) * np.fft.fft(cubic))
+        field -= h * derivative
     return field

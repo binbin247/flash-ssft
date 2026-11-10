@@ -31,7 +31,7 @@ def cuda():
 
 @pytest.fixture(scope="module")
 def simulate_gpu(cuda):
-    from flashlle.solvers.nlse import simulate_gpu
+    from flashlle.solvers.nlse_gpu_opt import simulate_gpu
 
     return simulate_gpu
 
@@ -247,7 +247,7 @@ def test_gpu_single_step_uses_graph_and_preserves_seed(cuda, simulate_gpu):
 
 def test_nlse_step_and_torch_baseline_match_reference(cuda):
     from benchmarks._torch_reference import torch_nlse_step
-    from flashlle.solvers.nlse import nlse_step
+    from flashlle.solvers.nlse_gpu_opt import nlse_step
 
     params = NLSEParams(n_samples=65, dt=0.2, gamma0=2.3, beta3=0.02, omega0=8.0)
     seed = smooth_field(65)
@@ -273,7 +273,7 @@ def test_gpu_accepts_sliced_inputs(dtype, simulate_gpu):
 
 
 def test_graph_cache_separates_parameters_and_restores_each_seed(simulate_gpu):
-    from flashlle.solvers.nlse import clear_graph_cache
+    from flashlle.solvers.nlse_gpu_opt import clear_graph_cache
 
     base = NLSEParams(n_samples=64, dt=0.2, dz=0.01)
     seed = smooth_field(64)
@@ -300,7 +300,7 @@ def test_invalid_graph_chunks(chunk, simulate_gpu):
 def test_graph_stepper_preserves_inputs_and_previous_outputs(in_place, cuda):
     from functools import partial
     from operator import methodcaller
-    from flashlle.solvers.nlse import CudaGraphStepper
+    from flashlle.solvers.nlse_gpu_opt import CudaGraphStepper
 
     increment = 1 + 2j
     step = methodcaller("add_", increment) if in_place else partial(cuda.add, other=increment)

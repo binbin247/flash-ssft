@@ -33,7 +33,7 @@ def main() -> None:
     if args.backend in ("numpy", "compare"):
         final = cpu = simulate_numpy(seed, params, steps=args.steps)
     if args.backend in ("gpu", "compare"):
-        from flashlle.solvers.nlse import simulate_gpu
+        from flashlle.solvers.nlse_gpu_opt import simulate_gpu
 
         final = gpu = simulate_gpu(seed, params, steps=args.steps, graph_chunk=16)
     if not np.isfinite(final).all():

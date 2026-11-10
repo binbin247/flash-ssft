@@ -1,6 +1,6 @@
 # flash-ssft
 
-使用独立 Triton 算子、cuFFT 和 CUDA Graph 求解含损耗、色散、Kerr 非线性与自陡峭效应的 **NLSE**。Python 包名仍为 `flashlle`，当前求解器接口是 `NLSEParams` 和 `flashlle.solvers.nlse`。
+使用独立 Triton 算子、cuFFT 和 CUDA Graph 求解含损耗、色散、Kerr 非线性与自陡峭效应的 **NLSE**。Python 包名仍为 `flashlle`，当前求解器接口是 `NLSEParams` 和 `flashlle.solvers.nlse_gpu_opt`。
 
 ## 方程与离散约定
 
@@ -77,7 +77,7 @@ python -m pip install -e '.[gpu,dev,benchmark]'
 ```
 
 ```python
-from flashlle.solvers.nlse import simulate_gpu, clear_graph_cache
+from flashlle.solvers.nlse_gpu_opt import simulate_gpu, clear_graph_cache
 
 final_gpu = simulate_gpu(a0, params, steps=1000, graph_chunk=16)
 clear_graph_cache()
@@ -110,6 +110,89 @@ NLSE 测试覆盖损耗幅度/功率关系、二至六阶色散的正负 Fourier
 
 独立算子仍可使用 `benchmarks/benchmark_operators.py` 测量。`operators/` 中的 Kerr、Kerr–Raman、Kerr–shock、色散/损耗和线性/泵浦实现均独立保留；NLSE 求解器只组合色散/损耗与 Kerr–shock。
 
+## 调参与性能优化
+
+性能调优在目标 CUDA GPU 上进行。先固定满足精度要求的物理问题和离散方案，再比较执行配置；最佳配置取决于 GPU、采样点数、是否开启自陡峭、传播步数和计算图复用次数。下面给出的数值是初始搜索范围，尚未测定当前 NLSE 的最优配置。
+
+### 区分性能参数与数值参数
+
+| 参数类别 | 参数 | 选择依据 |
+| --- | --- | --- |
+| Kernel 执行配置 | `BLOCK`、`num_warps`、`num_stages` | 在正确性检查通过后比较耗时和资源占用 |
+| 求解器执行配置 | `graph_chunk` | 比较建图成本、复用后的耗时和显存占用 |
+| 数值离散与精度 | `dz`、`dt`、`n_samples`、数据类型 | 根据稳定性、窗口长度、分辨率与收敛性确定 |
+| 物理参数 | `alpha`、`beta_m`、`gamma0`、`omega0` | 由仿真对象决定 |
+
+调 `dz` 时保持目标传播距离 `z=steps*dz` 一致；调时间分辨率时，区分加密网格与扩大时间窗口这两种实验。当前 GPU 算子要求 `complex64`，不能直接切换 dtype 来完成精度或性能对照。NumPy 基线与 GPU 采用相同的一阶推进方法，二者一致性检查之外仍需做步长收敛验证。
+
+### 优先联合搜索 BLOCK 和 num_warps
+
+当前算子中的 `BLOCK` 就是常说的 `BLOCK_SIZE`，均固定为 `256`，`num_warps` 尚未显式指定。`BLOCK` 表示每个 Triton program 处理的复数采样点或频点数，`num_warps` 表示该 program 使用的 warp 数；NVIDIA GPU 上每个 warp 有 32 个线程，线程数不必等于元素数。[Triton Config 说明](https://triton-lang.org/main/python-api/generated/triton.Config.html)
+
+| 参数 | 建议初始候选 | 主要权衡 |
+| --- | --- | --- |
+| `BLOCK` | `64, 128, 256, 512` | program 数量、每个 program 的工作量、寄存器压力及尾部掩码开销 |
+| `num_warps` | `1, 2, 4`；较大规模再考虑 `8` | 线程协作方式、寄存器资源与执行效率；应与 `BLOCK` 联合测量 |
+| `num_stages` | 初期保持编译器默认值 | 当前 kernel 没有显式分块加载循环，暂不作为重点；软件流水线更常用于带循环的矩阵类 kernel |
+
+例如 `N=1024` 时，`BLOCK=256` 只启动 4 个 program，`BLOCK=64` 则启动 16 个。较小的块可能提高设备利用率，较大的块可能提高单个 program 的效率；具体收益必须实测，不能按块大小推断。
+
+NLSE 实际使用的以下四个 kernel 可以分别选择配置，不要求共用同一个 `BLOCK` 或 `num_warps`：
+
+| Kernel | 职责 |
+| --- | --- |
+| `_disp_and_loss_kernel` | 色散/损耗的频域复数乘法 |
+| `_kerr_cubic_kernel` | Kerr 相位旋转及三次非线性项生成 |
+| `_shock_derivative_kernel` | 自陡峭项的频域求导 |
+| `_shock_update_kernel` | 自陡峭场更新 |
+
+修改块大小时，必须同步修改启动网格，使其使用 `triton.cdiv(N, BLOCK)`；目前启动网格中的 `256` 也是硬编码。如果不同 kernel 使用不同块大小，各自的启动网格也要匹配。验证应覆盖实际规模和 `N=257` 这样的非整除尺寸，确认尾部元素没有遗漏。
+
+### 再搜索 CUDA Graph 的 chunk
+
+`graph_chunk` 决定一次回放执行多少个完整传播步，不改变 `dz` 或数值更新公式。先测试 `1, 4, 8, 16, 32`，必要时扩大范围；`4` 或现有默认值 `16` 都可以作为初始基线。
+
+- 较小的 chunk 建图较快，但需要更多次回放和状态写回。
+- 较大的 chunk 减少回放次数，但图规模增大，通常需要更长建图时间，也可能占用更多显存。
+- 当前实现对 `steps % chunk` 个剩余步骤普通执行。总共 1,000 步时，chunk 为 4 没有余数，为 64 则有 40 步走普通调用；应按实际常用的总步数测量。
+- 只运行一次时，关注包含首次编译与建图的总耗时；同一参数反复运行时，关注缓存图后的耗时，并单独记录建图成本。
+
+已有 chunk 扫描脚本可直接运行：
+
+```bash
+python benchmarks/compare_chunks.py \
+  --samples 1024 2048 4096 \
+  --chunks 1 4 8 16 32 \
+  --steps 1000 \
+  --repeats 7 \
+  --output results/tuning_chunks_nlse.json
+```
+
+脚本分别记录预热后的建图时间、缓存图后的主机到主机耗时，以及 PyTorch 预留显存增量；该显存指标不包含分配器外的全部占用，也不等同于完整峰值显存。脚本使用 `examples/run_tod.py` 的示例参数和初态，实际应用的参数不同则需换成对应工况。仓库里的旧 LLE chunk 测量只能作为历史参考，不能直接认定为当前 NLSE 的最佳选择。
+
+### 测量顺序与验收
+
+1. **固定工况和误差要求。** 确定 GPU、物理参数、初始场、采样点数、传播距离及数据类型，先通过数值正确性和收敛性检查。
+2. **分解耗时。** 测量 FFT/IFFT、逐点 kernel 以及主机提交等开销。开启自陡峭时，每步包含线性部分的一组 FFT/IFFT 和非线性求导的一组 FFT/IFFT；如果主要时间花在 FFT 上，仅调逐点 kernel 的收益会受到限制。
+3. **联合搜索 kernel 配置。** 按实际输入规模分别比较 `BLOCK × num_warps`，每个候选先验证数值结果，再测量。改变配置后完成编译和预热，再捕获 CUDA Graph。
+4. **扫描 graph_chunk。** 使用选定的 kernel 配置重新建图，比较常用传播步数下的总耗时。现有图缓存的键不含 kernel 调参配置；配置改变后需清空缓存或重启进程，避免回放旧图。
+5. **验收完整算子与完整仿真。** 同时记录 eager 和 CUDA Graph 模式，分别比较相同模式；以完整 `kerr_shock_` 和完整 NLSE 的耗时与误差决定是否保留优化，不能只看某个 kernel 的加速比。
+
+计时前完成编译、FFT 初始化和预热。使用 CUDA Events 测量设备执行，或在主机计时区间前后同步 GPU；不能只测异步调用返回所花的时间。各候选使用相同初态，交替或随机顺序重复测量，建议至少 7 次并报告中位数与波动。把系数准备、数据传输、输入恢复、编译和建图是否计入耗时写清楚；保存 GPU/软件版本、输入规模、`BLOCK`、`num_warps`、chunk、误差及源码版本。
+
+这些算子会原地修改输入。采用 `triton.autotune` 时，必须在不同候选之间恢复输入，例如为实际输入参数指定 `restore_value`，或使用受控的输入恢复钩子；连续测试同一份已经被修改的场会破坏比较。自动调参应在 CUDA Graph 捕获之前完成。参见 [Triton autotune 文档](https://triton-lang.org/main/python-api/generated/triton.autotune.html)。
+
+**当前工具覆盖范围：** `compare_chunks.py` 已支持 chunk 扫描；`benchmark_operators.py` 目前只支持 `kerr`、`kerr_raman`、`linear_and_pump`，尚未支持 `disp_and_loss`、`kerr_shock`，也没有 `BLOCK`/`num_warps` 搜索入口。开展 kernel 调优前，应先补齐这两个算子的性能/精度基线和配置入口。上面的 chunk 命令使用现有 kernel 配置，不会自动搜索块大小。
+
+完成配置选择后，可以用以下命令检查完整 NLSE 的 PyTorch/Triton 对照；其中 `4` 替换为实际选中的 chunk：
+
+```bash
+python benchmarks/compare_implementations.py \
+  --samples 1024 2048 4096 --steps 1000 \
+  --graph-chunk 4 --repeats 7 \
+  --output results/tuning_implementations_nlse.json
+```
+
 ## 代码结构
 
 ```text
@@ -119,8 +202,8 @@ src/flashlle/
 └── solvers/
     ├── __init__.py      CPU 参数、网格和参考求解器入口
     ├── params.py        NLSEParams、时间/频率网格、线性因子
-    ├── nlse.py          GPU 单步组合、传播循环与 CUDA Graph
-    ├── reference.py     NumPy NLSE 求解器
+    ├── nlse_gpu_opt.py  GPU 单步组合、传播循环与 CUDA Graph
+    ├── nlse_numpy_baseline.py  NumPy NLSE 基线实现
     └── _validation.py  主机输入与执行参数检查
 examples/run_tod.py      初始脉冲与三阶色散示例
 benchmarks/             独立算子和 NLSE 对照

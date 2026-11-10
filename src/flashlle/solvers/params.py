@@ -9,6 +9,16 @@ from numbers import Integral, Real
 import numpy as np
 
 
+def _set_real(obj: object, name: str, *, allow_positive_inf: bool = False) -> None:
+    value = getattr(obj, name)
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{name} must be real")
+    value = float(value)
+    if not isfinite(value) and not (allow_positive_inf and value == float("inf")):
+        raise ValueError(f"{name} must be finite")
+    object.__setattr__(obj, name, value)
+
+
 @dataclass(frozen=True)
 class NLSEParams:
     """Constant coefficients on a periodic retarded-time grid of length N*dt.
@@ -37,13 +47,7 @@ class NLSEParams:
             raise ValueError("n_samples must be a positive integer")
         object.__setattr__(self, "n_samples", int(self.n_samples))
         for name in ("dt", "dz", "alpha", "beta2", "beta3", "beta4", "gamma0", "omega0"):
-            value = getattr(self, name)
-            if not isinstance(value, Real) or isinstance(value, bool):
-                raise ValueError(f"{name} must be real")
-            value = float(value)
-            if not isfinite(value) and not (name == "omega0" and value == float("inf")):
-                raise ValueError(f"{name} must be finite")
-            object.__setattr__(self, name, value)
+            _set_real(self, name, allow_positive_inf=name == "omega0")
         if self.dt <= 0 or self.omega0 <= 0:
             raise ValueError("dt and omega0 must be positive")
         if self.dz < 0 or self.alpha < 0:
