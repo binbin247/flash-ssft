@@ -1,0 +1,111 @@
+# optics-cuda（GTX 1660）NLSE 性能实验报告
+
+实验日期：2026-11-10（北京时间）。本报告由已保存的实验汇总和原始 JSON 整理，原始结果位于 [`benchmarks/NLSE_bench/results/1060/`](../benchmarks/NLSE_bench/results/1060/)。
+
+4096 步实验中，优化 GPU 实现相对本机 NumPy CPU baseline 的稳态加速为 **8.15–20.81×**，四个规模几何平均为 **12.51×**。与普通 PyTorch GPU 端到端单次调用相比，加速约为 **13.45–39.31×**。正确性检查为 **19/25 通过**，6 个长步案例超过预设场误差阈值，具体数据见下文。
+
+实际 GPU：NVIDIA GeForce GTX 1660（6 GiB）；按用户指定目录名保存于 `1060/`。GPU UUID：`GPU-0d704e0b-4b8b-5463-afc8-4a032831fab4`。
+
+执行源码：`9d60f6563f17346029a65e0ccc3272645ab2b2bc`。26 个源文件的 SHA256 均与该提交一致。远端旧 Git HEAD 为 `32a83798b753e84268a738c0a42ede39e6669228`；原始 metadata.git_commit 记录的是这个旧 HEAD，请结合 [provenance.json](../benchmarks/NLSE_bench/results/1060/provenance.json) 和 [source_manifest.json](../benchmarks/NLSE_bench/results/1060/source_manifest.json) 使用。
+
+环境：Python 3.11.17、PyTorch 2.13.0+cu126、CUDA runtime 12.6、Triton 3.7.1、NumPy 2.4.6、WSL2。
+
+完整 pytest：190 passed（8.58 s）。实验规模：N=1024/2048/4096/8192，steps=4096；kernel 搜索 64 组，chunk 搜索 72 组（含 steps=4097），每组 2 次预热、7 次正式计时。
+
+物理参数：dz=0.001、dt=20/N、alpha=0、beta2=-1、beta3=0.05、beta4=0、gamma0=1、omega0=20；sech 初始场，主实验传播距离 4.096。NumPy 为 complex128，GPU 为 complex64。
+
+按四个主规模的稳态耗时几何平均选择：BLOCK=256、num_warps=8、graph_chunk=2。chunk 的选择仅使用 steps=4096；4097 用于覆盖余数步路径。
+
+这是本次单轮搜索的最优候选，不能直接断言在其他负载下仍最优。次优 chunk=32 的几何平均耗时比 chunk=2 高约 0.95%；N=4096、chunk=2 的 7 次测量范围为 98.850–176.115 ms。请结合重复样本的抖动评估排名，原始样本全部保留。
+
+## 端到端测量
+
+单位为毫秒。最终阶段使用新 Python 进程。NumPy、PyTorch 每个规模各记录一次端到端调用；优化稳态为预热后的 7 次中位数，包含输入输出传输。PyTorch 这里可能包含首次初始化，因此该列加速比不能解释为纯 GPU kernel 加速比；下节提供 GPU 常驻的预热对照。
+
+| N | NumPy CPU | PyTorch GPU 单次 | 优化首次调用 | 优化缓存 Graph 稳态 | PyTorch/优化 | NumPy/优化 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1024 | 471.764 | 2276.421 | 1055.990 | 57.906 | 39.31× | 8.15× |
+| 2048 | 784.226 | 2183.356 | 208.152 | 72.718 | 30.03× | 10.78× |
+| 4096 | 1339.270 | 2096.283 | 259.287 | 99.977 | 20.97× | 13.40× |
+| 8192 | 3139.089 | 2030.020 | 215.949 | 150.876 | 13.45× | 20.81× |
+
+NumPy 相对加速比按 `numpy_seconds / optimized_steady.steady_median_seconds` 计算，四个规模的几何平均为 **12.51×**。GPU 稳态耗时包含输入输出传输；NumPy 使用 `complex128`，GPU 使用 `complex64`，因此该比值比较的是本实验配置，并非相同计算精度。
+
+首次调用成本单独计入时，小规模收益不同：`N=1024` 的优化首次调用约为 `1.056 s`，NumPy 约为 `0.472 s`。重复运行同一参数时才可采用缓存 Graph 的稳态结果。
+
+## GPU 常驻对照
+
+均为 CUDA Event 计时、中位数，排除主机传输与系数准备，包含输入恢复和输出克隆。eager 测量也包含 Python 提交不及时产生的 GPU 空闲时间。Graph 收益以同一轮 kernel 搜索的 chunk=16 对照计算。
+
+| N | PyTorch eager ms | Triton eager ms | Graph chunk=16 ms | PyTorch/Triton eager | Triton eager/Graph | 最佳 chunk=2 ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1024 | 2323.555 | 1953.216 | 66.193 | 1.19× | 29.51× | 63.807 |
+| 2048 | 2247.252 | 1849.184 | 73.849 | 1.22× | 25.04× | 72.239 |
+| 4096 | 2378.263 | 1873.592 | 102.370 | 1.27× | 18.30× | 103.303 |
+| 8192 | 2314.488 | 1854.676 | 155.546 | 1.25× | 11.92× | 157.234 |
+
+## 首次成本与吞吐量
+
+`compile_seconds` 是首次 Triton 单步调用耗时，包含首次派发、可能的 JIT 或缓存加载、执行和同步，并非纯编译器耗时。`capture_seconds` 包含 stepper 构造、内部预热、同步与捕获。进程之间使用已有 Triton 磁盘缓存，故首次成本也可能命中缓存。显存为 PyTorch allocator 统计，不能等同于 nvidia-smi 整卡用量。
+
+| N | 首个 Triton 调用 ms | 建图 ms | 分配峰值 MiB | 保留峰值 MiB | steps/s | 样本步/s |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1024 | 259.940 | 4.265 | 0.087 | 6.000 | 70735 | 72432610 |
+| 2048 | 231.210 | 2.604 | 0.173 | 8.000 | 56327 | 115358222 |
+| 4096 | 233.423 | 2.836 | 0.345 | 8.000 | 40969 | 167810584 |
+| 8192 | 229.656 | 2.225 | 0.689 | 8.000 | 27148 | 222397815 |
+
+## 每个规模的最佳候选
+
+| N | 最佳 BLOCK | 最佳 num_warps | kernel 搜索 ms（chunk=16） | 最佳 chunk | chunk 搜索 ms |
+| --- | --- | --- | --- | --- | --- |
+| 1024 | 128 | 4 | 65.194 | 2 | 63.807 |
+| 2048 | 64 | 4 | 73.638 | 2 | 72.239 |
+| 4096 | 256 | 8 | 102.370 | 1 | 100.057 |
+| 8192 | 128 | 4 | 155.448 | 32 | 155.491 |
+
+## 正确性和收敛
+
+正确性检查 19/25 通过；所有 GPU 输出 shape、dtype、有限值和初态不变检查均符合预期。以下 6 项超过原定场相对 L2 上限 1e-3，严格精度验收未通过；阈值未放宽。PyTorch 与 Triton 均出现同类长步误差，与有限精度累计误差的解释一致，但本轮未单独定位误差来源。
+
+| N | steps | Triton/NumPy 场相对 L2 | PyTorch/NumPy 场相对 L2 | Triton/PyTorch 场相对 L2 |
+| --- | --- | --- | --- | --- |
+| 1024 | 4096 | 1.640675e-03 | 1.653323e-03 | 2.033597e-05 |
+| 2048 | 4096 | 1.681724e-03 | 1.692506e-03 | 1.955709e-05 |
+| 4096 | 4096 | 1.524584e-03 | 1.531979e-03 | 1.915167e-05 |
+| 8192 | 4096 | 1.467217e-03 | 1.442041e-03 | 5.790387e-04 |
+| 257 | 4096 | 2.178477e-03 | 2.166686e-03 | 2.242550e-05 |
+| 4097 | 4096 | 1.335680e-03 | 1.336883e-03 | 2.555233e-05 |
+
+步长收敛采用 NumPy complex128、N=4096、固定传播距离 4.096，以最小步长解作参考：
+
+| dz | steps | 相对最小步长的场 L2 | 能量 | 有限值 |
+| --- | --- | --- | --- | --- |
+| 0.001 | 4096 | 2.773653e-04 | 2.000014031 | True |
+| 0.0005 | 8192 | 9.241734e-05 | 2.000007014 | True |
+| 0.00025 | 16384 | 0.000000e+00 | 2.000003503 | True |
+
+## 与 L40s 的观测对照
+
+L40s 环境为 PyTorch 2.11.0+cu128、CUDA 12.8、Triton 3.6.0，且宿主机 CPU、驱动、操作系统和运行方式不同。下表是两套环境各自选优后的整体耗时比较，不能归因为单一 GPU 硬件差异。
+
+| N | L40s 优化稳态 ms | GTX 1660 优化稳态 ms | GTX 1660/L40s 耗时比 |
+| --- | --- | --- | --- |
+| 1024 | 51.868 | 57.906 | 1.12 |
+| 2048 | 66.074 | 72.718 | 1.10 |
+| 4096 | 75.385 | 99.977 | 1.33 |
+| 8192 | 109.338 | 150.876 | 1.38 |
+
+## 记录说明
+
+kernel 搜索中 IPv4 SSH 连接断开，但原进程继续执行，并通过 IPv6 连接恢复监测；未重复启动同一个搜索。断联前的 stdout 保存在 `kernel_search.interrupted.log`；断联后的 console 输出无法恢复，完整 64 组测量在 [kernel_search.json](../benchmarks/NLSE_bench/results/1060/kernel_search.json) 中。后续阶段通过 [finish_experiment.py](../benchmarks/NLSE_bench/results/1060/finish_experiment.py) 接续执行，每阶段日志均在原始结果目录保存。
+
+本轮保留 commit 9d60f65 的核心求解器和测量函数；接续脚本只增加恢复、进度保存、来源校验，并按四个规模几何平均选择全局 chunk。原 CLI 按最短单条记录选 chunk，两者规则区别已显式记录。
+
+原始 `optimized_speedup_eager_reference` 字段实际是首次调用时间/缓存稳态时间，本报告未把它当作 Graph 相对 eager 的收益。
+
+文件索引：[correctness.json](../benchmarks/NLSE_bench/results/1060/correctness.json)、[kernel_search.json](../benchmarks/NLSE_bench/results/1060/kernel_search.json)、[chunk_search.json](../benchmarks/NLSE_bench/results/1060/chunk_search.json)、[final.json](../benchmarks/NLSE_bench/results/1060/final.json)、[convergence.json](../benchmarks/NLSE_bench/results/1060/convergence.json)、[environment.json](../benchmarks/NLSE_bench/results/1060/environment.json)。
+
+本地回传后已对照 [SHA256SUMS](../benchmarks/NLSE_bench/results/1060/SHA256SUMS) 复核 35 个文件内容。报告中的派生比值由原始 JSON 重新计算，不改写原始测量。
+
+另见 [L40s 实验报告](NLSE_GPU_experiment_report.md)。
