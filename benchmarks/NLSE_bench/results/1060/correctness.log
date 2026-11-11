@@ -1,0 +1,93 @@
+{
+  "started_utc": "2026-11-10T14:26:57.531178+00:00",
+  "hostname": "DESKTOP-QSA0U55",
+  "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+  "numpy": "2.4.6",
+  "torch": "2.13.0+cu126",
+  "torch_cuda": "12.6",
+  "triton": "3.7.1",
+  "cuda_visible_devices": null,
+  "device_index": 0,
+  "gpu": "NVIDIA GeForce GTX 1660",
+  "compute_capability": [
+    7,
+    5
+  ],
+  "total_memory_bytes": 6442123264,
+  "git_commit": "32a83798b753e84268a738c0a42ede39e6669228",
+  "source_sha256": {
+    "src/flashlle/__init__.py": "a4adf52d5e6cc39c6a8684b59bdd80e3cdc7a59f1f98f3faa0c7a831543dcbe0",
+    "src/flashlle/_validation.py": "d1072416a703030fdfe897d5f15e04837b4bad92c227764d8ec10ff2580996dc",
+    "src/flashlle/gpu.py": "218c111251ad058497b17ff9af2618f629b2fc7bfdcb9802296d16e8faf0be73",
+    "src/flashlle/model.py": "b944dd802df015e206f2d0170d66a7a46d2cbefa63e11a99055cd309c69a0389",
+    "src/flashlle/operators/__init__.py": "9adcbd182b5c8378a0b401b8eff0c5ca8eff5dd12e973306f5bcdedfd4bfa09d",
+    "src/flashlle/operators/_validation.py": "d82e348084fef34b2e15323c378107ba69eecc046d239b83d4cdbd70eefd2ce0",
+    "src/flashlle/operators/disp_and_loss.py": "9516bd7143ee9ee8f6b92cc2ceb29828db62bbce9e153777b861833cd68b4423",
+    "src/flashlle/operators/kerr.py": "ebe0ef4cf275f5dc5250c1716263e82cf1f204e6df06724ef20a7fc579d1583b",
+    "src/flashlle/operators/kerr_raman.py": "094f41259bfb2d272a7d876b6b9cd0d5454b133e110f7dfc0fb304bb968e2efa",
+    "src/flashlle/operators/kerr_shock.py": "ebc908cda21ba4f41088601b52d74d9b4e25930b5413717b6710fa5f430a1420",
+    "src/flashlle/operators/linear_and_pump.py": "4839a5d45ea60639162eb45114db9b8e770393645b42cd08b0dc698632f4fd46",
+    "src/flashlle/reference.py": "0fa757c280d302892bb8b21cbf06a8ef9d37ccf5258564f5a13bab06b76b8bad",
+    "src/flashlle/solvers/__init__.py": "9d0facc229a9369fe2edcb9a74b52b2cd9dd3061436418990b20ace22e558506",
+    "src/flashlle/solvers/_validation.py": "a78884201a3448bf0bae768e5a3e525fd12a18f56bb6eee8219dc6d7eb435632",
+    "src/flashlle/solvers/nlse_gpu_opt.py": "359b7c8985fc92295277e479f5661d92dff936c977f1e0a72f142bf1a6ac95cf",
+    "src/flashlle/solvers/nlse_numpy_baseline.py": "67c7eab739955d47b54abdd60fb57d02aa37386f471f36cac16226d5dba3642e",
+    "src/flashlle/solvers/nlse_pytorch_baseline.py": "ae3b1d134bd45e4380e81324b4454a590a7cf4e610c0ca23cc1d1e06c5ee2988",
+    "src/flashlle/solvers/params.py": "922cd3159842084084c9fb0306f42888156c039d8cb13652cf174f9ffea697cb",
+    "examples/__init__.py": "172585529e8269577989a373dc572b6db61c8d01589bfa9913677015004987df",
+    "examples/run_tod.py": "50cf155e57eab1cdc542447b5fa9371c63e7af7b873f52fe428b001718b7868a",
+    "benchmarks/NLSE_bench/run_experiment.py": "b7fb4cf84b449b8b43006a1f33b0088cbcef263d349aceb60590d19c683a567c",
+    "pyproject.toml": "5f7a7fe5ca6bdad147c79c79d7c4a822301389bc1ec972d8e038451f64ef1e42"
+  }
+}
+[correctness] NumPy reference N=1024 steps=0
+[correctness] N=1024 steps=0 torch=2.216e-08 triton=2.216e-08 passed=True
+[correctness] NumPy reference N=1024 steps=1
+[correctness] N=1024 steps=1 torch=2.566e-07 triton=2.568e-07 passed=True
+[correctness] NumPy reference N=1024 steps=16
+[correctness] N=1024 steps=16 torch=2.974e-06 triton=2.894e-06 passed=True
+[correctness] NumPy reference N=1024 steps=4096
+[correctness] N=1024 steps=4096 torch=1.653e-03 triton=1.641e-03 passed=False
+[correctness] NumPy reference N=2048 steps=0
+[correctness] N=2048 steps=0 torch=2.220e-08 triton=2.220e-08 passed=True
+[correctness] NumPy reference N=2048 steps=1
+[correctness] N=2048 steps=1 torch=2.368e-07 triton=2.368e-07 passed=True
+[correctness] NumPy reference N=2048 steps=16
+[correctness] N=2048 steps=16 torch=2.752e-06 triton=2.728e-06 passed=True
+[correctness] NumPy reference N=2048 steps=4096
+[correctness] N=2048 steps=4096 torch=1.693e-03 triton=1.682e-03 passed=False
+[correctness] NumPy reference N=4096 steps=0
+[correctness] N=4096 steps=0 torch=2.208e-08 triton=2.208e-08 passed=True
+[correctness] NumPy reference N=4096 steps=1
+[correctness] N=4096 steps=1 torch=2.304e-07 triton=2.305e-07 passed=True
+[correctness] NumPy reference N=4096 steps=16
+[correctness] N=4096 steps=16 torch=2.357e-06 triton=2.277e-06 passed=True
+[correctness] NumPy reference N=4096 steps=4096
+[correctness] N=4096 steps=4096 torch=1.532e-03 triton=1.525e-03 passed=False
+[correctness] NumPy reference N=8192 steps=0
+[correctness] N=8192 steps=0 torch=2.176e-08 triton=2.176e-08 passed=True
+[correctness] NumPy reference N=8192 steps=1
+[correctness] N=8192 steps=1 torch=2.896e-07 triton=2.898e-07 passed=True
+[correctness] NumPy reference N=8192 steps=16
+[correctness] N=8192 steps=16 torch=2.250e-06 triton=2.250e-06 passed=True
+[correctness] NumPy reference N=8192 steps=4096
+[correctness] N=8192 steps=4096 torch=1.442e-03 triton=1.467e-03 passed=False
+[correctness] NumPy reference N=257 steps=1
+[correctness] N=257 steps=1 torch=3.012e-07 triton=3.012e-07 passed=True
+[correctness] NumPy reference N=257 steps=16
+[correctness] N=257 steps=16 torch=3.573e-06 triton=3.610e-06 passed=True
+[correctness] NumPy reference N=257 steps=4096
+[correctness] N=257 steps=4096 torch=2.167e-03 triton=2.178e-03 passed=False
+[correctness] NumPy reference N=1025 steps=1
+[correctness] N=1025 steps=1 torch=2.423e-07 triton=2.421e-07 passed=True
+[correctness] NumPy reference N=1025 steps=16
+[correctness] N=1025 steps=16 torch=2.080e-06 triton=2.109e-06 passed=True
+[correctness] NumPy reference N=1025 steps=4096
+[correctness] N=1025 steps=4096 torch=2.270e-04 triton=2.298e-04 passed=True
+[correctness] NumPy reference N=4097 steps=1
+[correctness] N=4097 steps=1 torch=4.113e-07 triton=4.092e-07 passed=True
+[correctness] NumPy reference N=4097 steps=16
+[correctness] N=4097 steps=16 torch=3.455e-06 triton=3.522e-06 passed=True
+[correctness] NumPy reference N=4097 steps=4096
+[correctness] N=4097 steps=4096 torch=1.337e-03 triton=1.336e-03 passed=False

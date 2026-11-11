@@ -1,0 +1,371 @@
+{
+  "metadata": {
+    "started_utc": "2026-11-10T15:07:46.851524+00:00",
+    "hostname": "DESKTOP-QSA0U55",
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.11.17 (main, Oct 13 2026, 16:45:47) [GCC 15.3.0]",
+    "numpy": "2.4.6",
+    "torch": "2.13.0+cu126",
+    "torch_cuda": "12.6",
+    "triton": "3.7.1",
+    "cuda_visible_devices": "0",
+    "device_index": 0,
+    "gpu": "NVIDIA GeForce GTX 1660",
+    "compute_capability": [
+      7,
+      5
+    ],
+    "total_memory_bytes": 6442123264,
+    "git_commit": "32a83798b753e84268a738c0a42ede39e6669228",
+    "source_sha256": {
+      "src/flashlle/__init__.py": "a4adf52d5e6cc39c6a8684b59bdd80e3cdc7a59f1f98f3faa0c7a831543dcbe0",
+      "src/flashlle/_validation.py": "d1072416a703030fdfe897d5f15e04837b4bad92c227764d8ec10ff2580996dc",
+      "src/flashlle/gpu.py": "218c111251ad058497b17ff9af2618f629b2fc7bfdcb9802296d16e8faf0be73",
+      "src/flashlle/model.py": "b944dd802df015e206f2d0170d66a7a46d2cbefa63e11a99055cd309c69a0389",
+      "src/flashlle/operators/__init__.py": "9adcbd182b5c8378a0b401b8eff0c5ca8eff5dd12e973306f5bcdedfd4bfa09d",
+      "src/flashlle/operators/_validation.py": "d82e348084fef34b2e15323c378107ba69eecc046d239b83d4cdbd70eefd2ce0",
+      "src/flashlle/operators/disp_and_loss.py": "9516bd7143ee9ee8f6b92cc2ceb29828db62bbce9e153777b861833cd68b4423",
+      "src/flashlle/operators/kerr.py": "ebe0ef4cf275f5dc5250c1716263e82cf1f204e6df06724ef20a7fc579d1583b",
+      "src/flashlle/operators/kerr_raman.py": "094f41259bfb2d272a7d876b6b9cd0d5454b133e110f7dfc0fb304bb968e2efa",
+      "src/flashlle/operators/kerr_shock.py": "ebc908cda21ba4f41088601b52d74d9b4e25930b5413717b6710fa5f430a1420",
+      "src/flashlle/operators/linear_and_pump.py": "4839a5d45ea60639162eb45114db9b8e770393645b42cd08b0dc698632f4fd46",
+      "src/flashlle/reference.py": "0fa757c280d302892bb8b21cbf06a8ef9d37ccf5258564f5a13bab06b76b8bad",
+      "src/flashlle/solvers/__init__.py": "9d0facc229a9369fe2edcb9a74b52b2cd9dd3061436418990b20ace22e558506",
+      "src/flashlle/solvers/_validation.py": "a78884201a3448bf0bae768e5a3e525fd12a18f56bb6eee8219dc6d7eb435632",
+      "src/flashlle/solvers/nlse_gpu_opt.py": "359b7c8985fc92295277e479f5661d92dff936c977f1e0a72f142bf1a6ac95cf",
+      "src/flashlle/solvers/nlse_numpy_baseline.py": "67c7eab739955d47b54abdd60fb57d02aa37386f471f36cac16226d5dba3642e",
+      "src/flashlle/solvers/nlse_pytorch_baseline.py": "ae3b1d134bd45e4380e81324b4454a590a7cf4e610c0ca23cc1d1e06c5ee2988",
+      "src/flashlle/solvers/params.py": "922cd3159842084084c9fb0306f42888156c039d8cb13652cf174f9ffea697cb",
+      "examples/__init__.py": "172585529e8269577989a373dc572b6db61c8d01589bfa9913677015004987df",
+      "examples/run_tod.py": "50cf155e57eab1cdc542447b5fa9371c63e7af7b873f52fe428b001718b7868a",
+      "benchmarks/NLSE_bench/run_experiment.py": "b7fb4cf84b449b8b43006a1f33b0088cbcef263d349aceb60590d19c683a567c",
+      "pyproject.toml": "5f7a7fe5ca6bdad147c79c79d7c4a822301389bc1ec972d8e038451f64ef1e42"
+    },
+    "source_commit": "9d60f6563f17346029a65e0ccc3272645ab2b2bc",
+    "gpu_uuid": "GPU-0d704e0b-4b8b-5463-afc8-4a032831fab4",
+    "provenance_file": "provenance.json",
+    "fresh_final_process": true
+  },
+  "rows": [
+    {
+      "n_samples": 1024,
+      "steps": 4096,
+      "dt": 0.01953125,
+      "dz": 0.001,
+      "target_z": 4.096,
+      "parameters": {
+        "n_samples": 1024,
+        "dt": 0.01953125,
+        "dz": 0.001,
+        "alpha": 0.0,
+        "beta2": -1.0,
+        "beta3": 0.05,
+        "beta4": 0.0,
+        "gamma0": 1.0,
+        "omega0": 20.0,
+        "beta_higher": []
+      },
+      "dtype": "complex64",
+      "phase": "final",
+      "block": 256,
+      "num_warps": 8,
+      "graph_chunk": 2,
+      "numpy_seconds": 0.47176391600078205,
+      "pytorch_end_to_end": 2.2764209440028935,
+      "optimized_first_call_seconds": 1.055989769000007,
+      "optimized_steady": {
+        "repeat_seconds": [
+          0.11310264599887887,
+          0.057895202000509016,
+          0.057900243999029044,
+          0.05790629400144098,
+          0.05785211900001741,
+          0.058779877002962166,
+          0.05791041899647098
+        ],
+        "steady_median_seconds": 0.05790629400144098,
+        "steady_min_seconds": 0.05785211900001741,
+        "steady_max_seconds": 0.11310264599887887,
+        "steady_steps_per_second": 70734.97053529401,
+        "steady_samples_steps_per_second": 72432609.82814106
+      },
+      "pytorch_accuracy": {
+        "shape": [
+          1024
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.001653322772673323,
+        "max_absolute_error": 0.0018108376851584704,
+        "mean_power_relative_error": 0.0008042813787843797,
+        "energy_relative_error": 0.0008042813787844629,
+        "spectrum_relative_l2": 0.0007579257346238675
+      },
+      "optimized_accuracy": {
+        "shape": [
+          1024
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0016406750572159818,
+        "max_absolute_error": 0.0017934044205447964,
+        "mean_power_relative_error": 0.000803461820668158,
+        "energy_relative_error": 0.0008034469196115826,
+        "spectrum_relative_l2": 0.0007580012944297395
+      },
+      "optimized_vs_pytorch_relative_l2": 2.033597393408866e-05,
+      "pytorch_speedup_reference": 0.20723931452292174,
+      "optimized_speedup_pytorch": 39.31215048827413,
+      "optimized_speedup_eager_reference": 18.236182909127788,
+      "memory": {
+        "memory_allocated_bytes": 91648,
+        "memory_reserved_bytes": 6291456
+      }
+    },
+    {
+      "n_samples": 2048,
+      "steps": 4096,
+      "dt": 0.009765625,
+      "dz": 0.001,
+      "target_z": 4.096,
+      "parameters": {
+        "n_samples": 2048,
+        "dt": 0.009765625,
+        "dz": 0.001,
+        "alpha": 0.0,
+        "beta2": -1.0,
+        "beta3": 0.05,
+        "beta4": 0.0,
+        "gamma0": 1.0,
+        "omega0": 20.0,
+        "beta_higher": []
+      },
+      "dtype": "complex64",
+      "phase": "final",
+      "block": 256,
+      "num_warps": 8,
+      "graph_chunk": 2,
+      "numpy_seconds": 0.7842258020027657,
+      "pytorch_end_to_end": 2.1833558739999717,
+      "optimized_first_call_seconds": 0.2081522069966013,
+      "optimized_steady": {
+        "repeat_seconds": [
+          0.07271790300001157,
+          0.07317290200080606,
+          0.07400850299745798,
+          0.07198980200337246,
+          0.07228550299987546,
+          0.07219470199925127,
+          0.07274770300136879
+        ],
+        "steady_median_seconds": 0.07271790300001157,
+        "steady_min_seconds": 0.07198980200337246,
+        "steady_max_seconds": 0.07400850299745798,
+        "steady_steps_per_second": 56327.256851718455,
+        "steady_samples_steps_per_second": 115358222.0323194
+      },
+      "pytorch_accuracy": {
+        "shape": [
+          2048
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0016925058103247092,
+        "max_absolute_error": 0.0018454035471071855,
+        "mean_power_relative_error": 0.0008370637037267919,
+        "energy_relative_error": 0.0008370637037268473,
+        "spectrum_relative_l2": 0.0007597966183811303
+      },
+      "optimized_accuracy": {
+        "shape": [
+          2048
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0016817237507810966,
+        "max_absolute_error": 0.0018322841465973562,
+        "mean_power_relative_error": 0.0008325933867292203,
+        "energy_relative_error": 0.0008325933867292758,
+        "spectrum_relative_l2": 0.0007569173754444433
+      },
+      "optimized_vs_pytorch_relative_l2": 1.9557093203463643e-05,
+      "pytorch_speedup_reference": 0.3591836820289132,
+      "optimized_speedup_pytorch": 30.02501150232047,
+      "optimized_speedup_eager_reference": 2.8624616278685617,
+      "memory": {
+        "memory_allocated_bytes": 181760,
+        "memory_reserved_bytes": 8388608
+      }
+    },
+    {
+      "n_samples": 4096,
+      "steps": 4096,
+      "dt": 0.0048828125,
+      "dz": 0.001,
+      "target_z": 4.096,
+      "parameters": {
+        "n_samples": 4096,
+        "dt": 0.0048828125,
+        "dz": 0.001,
+        "alpha": 0.0,
+        "beta2": -1.0,
+        "beta3": 0.05,
+        "beta4": 0.0,
+        "gamma0": 1.0,
+        "omega0": 20.0,
+        "beta_higher": []
+      },
+      "dtype": "complex64",
+      "phase": "final",
+      "block": 256,
+      "num_warps": 8,
+      "graph_chunk": 2,
+      "numpy_seconds": 1.339270453001518,
+      "pytorch_end_to_end": 2.0962834140009363,
+      "optimized_first_call_seconds": 0.25928699799987953,
+      "optimized_steady": {
+        "repeat_seconds": [
+          0.09237100599784753,
+          0.09984114499820862,
+          0.09994840400031535,
+          0.09997710300012841,
+          0.19681540700184996,
+          0.10246470299898647,
+          0.10692750399903161
+        ],
+        "steady_median_seconds": 0.09997710300012841,
+        "steady_min_seconds": 0.09237100599784753,
+        "steady_max_seconds": 0.19681540700184996,
+        "steady_steps_per_second": 40969.38075905979,
+        "steady_samples_steps_per_second": 167810583.5891089
+      },
+      "pytorch_accuracy": {
+        "shape": [
+          4096
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0015319789022629135,
+        "max_absolute_error": 0.0016568786190135304,
+        "mean_power_relative_error": 0.0007235921579193875,
+        "energy_relative_error": 0.00072357725686284,
+        "spectrum_relative_l2": 0.000615312115556741
+      },
+      "optimized_accuracy": {
+        "shape": [
+          4096
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0015245841247530827,
+        "max_absolute_error": 0.0016439608268866372,
+        "mean_power_relative_error": 0.0007247097371687797,
+        "energy_relative_error": 0.0007247097371688906,
+        "spectrum_relative_l2": 0.0006132116469336088
+      },
+      "optimized_vs_pytorch_relative_l2": 1.9151670591736563e-05,
+      "pytorch_speedup_reference": 0.6388785237991297,
+      "optimized_speedup_pytorch": 20.967635099391146,
+      "optimized_speedup_eager_reference": 2.593463805402988,
+      "memory": {
+        "memory_allocated_bytes": 361984,
+        "memory_reserved_bytes": 8388608
+      }
+    },
+    {
+      "n_samples": 8192,
+      "steps": 4096,
+      "dt": 0.00244140625,
+      "dz": 0.001,
+      "target_z": 4.096,
+      "parameters": {
+        "n_samples": 8192,
+        "dt": 0.00244140625,
+        "dz": 0.001,
+        "alpha": 0.0,
+        "beta2": -1.0,
+        "beta3": 0.05,
+        "beta4": 0.0,
+        "gamma0": 1.0,
+        "omega0": 20.0,
+        "beta_higher": []
+      },
+      "dtype": "complex64",
+      "phase": "final",
+      "block": 256,
+      "num_warps": 8,
+      "graph_chunk": 2,
+      "numpy_seconds": 3.139088506999542,
+      "pytorch_end_to_end": 2.0300195689997054,
+      "optimized_first_call_seconds": 0.21594892700159107,
+      "optimized_steady": {
+        "repeat_seconds": [
+          0.15180435199727071,
+          0.15083577900077216,
+          0.15082519000134198,
+          0.1507892850022472,
+          0.1592062130002887,
+          0.1509303060011007,
+          0.1508757270021306
+        ],
+        "steady_median_seconds": 0.1508757270021306,
+        "steady_min_seconds": 0.1507892850022472,
+        "steady_max_seconds": 0.1592062130002887,
+        "steady_steps_per_second": 27148.170758720906,
+        "steady_samples_steps_per_second": 222397814.85544166
+      },
+      "pytorch_accuracy": {
+        "shape": [
+          8192
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0014420407473633356,
+        "max_absolute_error": 0.001584241739457245,
+        "mean_power_relative_error": 0.000698036846005125,
+        "energy_relative_error": 0.000698066648118553,
+        "spectrum_relative_l2": 0.0005933274845317134
+      },
+      "optimized_accuracy": {
+        "shape": [
+          8192
+        ],
+        "dtype": "complex64",
+        "finite": true,
+        "relative_l2": 0.0014672173162477106,
+        "max_absolute_error": 0.0017032299759223305,
+        "mean_power_relative_error": 0.0006992289305378097,
+        "energy_relative_error": 0.0006992587326512377,
+        "spectrum_relative_l2": 0.0005940083854155743
+      },
+      "optimized_vs_pytorch_relative_l2": 0.0005790387218038579,
+      "pytorch_speedup_reference": 1.546334111718111,
+      "optimized_speedup_pytorch": 13.454911597350835,
+      "optimized_speedup_eager_reference": 1.4313033069828491,
+      "memory": {
+        "memory_allocated_bytes": 722432,
+        "memory_reserved_bytes": 8388608
+      }
+    }
+  ],
+  "selection": {
+    "block": 256,
+    "num_warps": 8,
+    "geometric_mean_seconds": 0.09392851810954157,
+    "sample_count": 4,
+    "graph_chunk": 2,
+    "chunk_geometric_mean_seconds": 0.09301981071689575,
+    "chunk_scores": {
+      "1": 0.1225654009909368,
+      "2": 0.09301981071689575,
+      "4": 0.09960115501904276,
+      "8": 0.09771329357465598,
+      "16": 0.09409102406797351,
+      "32": 0.09390762623663852,
+      "64": 0.1016603265084658,
+      "128": 0.09623080240165215,
+      "256": 0.11168908172577666
+    },
+    "chunk_selection_steps": 4096
+  }
+}

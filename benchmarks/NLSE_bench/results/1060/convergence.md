@@ -1,0 +1,43 @@
+# convergence
+
+Rows: 3
+
+## Rows
+
+```json
+[
+  {
+    "phase": "convergence",
+    "n_samples": 4096,
+    "dz": 0.001,
+    "steps": 4096,
+    "target_z": 4.096,
+    "seconds": 1.515261692002241,
+    "relative_l2_to_smallest_dz": 0.0002773652704171385,
+    "energy": 2.00001403058696,
+    "finite": true
+  },
+  {
+    "phase": "convergence",
+    "n_samples": 4096,
+    "dz": 0.0005,
+    "steps": 8192,
+    "target_z": 4.096,
+    "seconds": 3.0210840299987467,
+    "relative_l2_to_smallest_dz": 9.241734437610303e-05,
+    "energy": 2.0000070135667194,
+    "finite": true
+  },
+  {
+    "phase": "convergence",
+    "n_samples": 4096,
+    "dz": 0.00025,
+    "steps": 16384,
+    "target_z": 4.096,
+    "seconds": 5.704918601000827,
+    "relative_l2_to_smallest_dz": 0.0,
+    "energy": 2.00000350326487,
+    "finite": true
+  }
+]
+```

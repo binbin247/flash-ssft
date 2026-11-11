@@ -1,0 +1,125 @@
+2026-11-10T14:47:45.593414+00:00 Original kernel search still running
+2026-11-10T14:48:16.965039+00:00 Original kernel search still running
+2026-11-10T14:48:48.375536+00:00 Original kernel search still running
+2026-11-10T14:49:18.375910+00:00 Original kernel search still running
+2026-11-10T14:49:49.932743+00:00 Original kernel search still running
+2026-11-10T14:50:21.024694+00:00 Original kernel search still running
+2026-11-10T14:50:52.185896+00:00 Original kernel search still running
+2026-11-10T14:51:23.283484+00:00 Original kernel search still running
+2026-11-10T14:51:54.438873+00:00 Original kernel search still running
+2026-11-10T14:52:25.573958+00:00 Original kernel search still running
+2026-11-10T14:52:55.574762+00:00 Original kernel search still running
+2026-11-10T14:53:26.694628+00:00 Original kernel search still running
+2026-11-10T14:53:57.844618+00:00 Original kernel search still running
+2026-11-10T14:54:28.912328+00:00 Original kernel search still running
+2026-11-10T14:54:59.987741+00:00 Original kernel search still running
+2026-11-10T14:55:31.078546+00:00 Original kernel search still running
+2026-11-10T14:56:02.206822+00:00 Original kernel search still running
+2026-11-10T14:56:32.217893+00:00 Original kernel search still running
+2026-11-10T14:57:03.121789+00:00 Original kernel search still running
+2026-11-10T14:57:34.042364+00:00 Original kernel search still running
+2026-11-10T14:58:04.651461+00:00 Original kernel search still running
+2026-11-10T14:58:35.609007+00:00 Original kernel search still running
+2026-11-10T14:59:06.390559+00:00 Original kernel search still running
+2026-11-10T14:59:37.346090+00:00 Original kernel search still running
+2026-11-10T15:00:08.303660+00:00 Original kernel search still running
+2026-11-10T15:00:39.362084+00:00 Original kernel search still running
+2026-11-10T15:01:10.427681+00:00 Original kernel search still running
+2026-11-10T15:01:41.380873+00:00 Original kernel search still running
+2026-11-10T15:02:12.407512+00:00 Original kernel search still running
+2026-11-10T15:02:43.487670+00:00 Original kernel search still running
+2026-11-10T15:03:14.532508+00:00 Original kernel search still running
+2026-11-10T15:03:44.533119+00:00 Original kernel search still running
+2026-11-10T15:04:15.588564+00:00 Original kernel search still running
+2026-11-10T15:04:46.640290+00:00 Original kernel search still running
+2026-11-10T15:05:17.655657+00:00 Original kernel search still running
+2026-11-10T15:05:48.692331+00:00 Original kernel search still running
+2026-11-10T15:05:56.157188+00:00 Original kernel search still running
+2026-11-10T15:06:28.787303+00:00 Original kernel results recovered: 64
+2026-11-10T15:06:28.843563+00:00 Starting chunk_search
+[chunk-search] N=1024 steps=4096 chunk=1
+[chunk-search] N=1024 steps=4096 chunk=2
+[chunk-search] N=1024 steps=4096 chunk=4
+[chunk-search] N=1024 steps=4096 chunk=8
+[chunk-search] N=1024 steps=4096 chunk=16
+[chunk-search] N=1024 steps=4096 chunk=32
+[chunk-search] N=1024 steps=4096 chunk=64
+[chunk-search] N=1024 steps=4096 chunk=128
+[chunk-search] N=1024 steps=4096 chunk=256
+[chunk-search] N=1024 steps=4097 chunk=1
+[chunk-search] N=1024 steps=4097 chunk=2
+[chunk-search] N=1024 steps=4097 chunk=4
+[chunk-search] N=1024 steps=4097 chunk=8
+[chunk-search] N=1024 steps=4097 chunk=16
+[chunk-search] N=1024 steps=4097 chunk=32
+[chunk-search] N=1024 steps=4097 chunk=64
+[chunk-search] N=1024 steps=4097 chunk=128
+[chunk-search] N=1024 steps=4097 chunk=256
+[chunk-search] N=2048 steps=4096 chunk=1
+[chunk-search] N=2048 steps=4096 chunk=2
+[chunk-search] N=2048 steps=4096 chunk=4
+[chunk-search] N=2048 steps=4096 chunk=8
+[chunk-search] N=2048 steps=4096 chunk=16
+[chunk-search] N=2048 steps=4096 chunk=32
+[chunk-search] N=2048 steps=4096 chunk=64
+[chunk-search] N=2048 steps=4096 chunk=128
+[chunk-search] N=2048 steps=4096 chunk=256
+[chunk-search] N=2048 steps=4097 chunk=1
+[chunk-search] N=2048 steps=4097 chunk=2
+[chunk-search] N=2048 steps=4097 chunk=4
+[chunk-search] N=2048 steps=4097 chunk=8
+[chunk-search] N=2048 steps=4097 chunk=16
+[chunk-search] N=2048 steps=4097 chunk=32
+[chunk-search] N=2048 steps=4097 chunk=64
+[chunk-search] N=2048 steps=4097 chunk=128
+[chunk-search] N=2048 steps=4097 chunk=256
+[chunk-search] N=4096 steps=4096 chunk=1
+[chunk-search] N=4096 steps=4096 chunk=2
+[chunk-search] N=4096 steps=4096 chunk=4
+[chunk-search] N=4096 steps=4096 chunk=8
+[chunk-search] N=4096 steps=4096 chunk=16
+[chunk-search] N=4096 steps=4096 chunk=32
+[chunk-search] N=4096 steps=4096 chunk=64
+[chunk-search] N=4096 steps=4096 chunk=128
+[chunk-search] N=4096 steps=4096 chunk=256
+[chunk-search] N=4096 steps=4097 chunk=1
+[chunk-search] N=4096 steps=4097 chunk=2
+[chunk-search] N=4096 steps=4097 chunk=4
+[chunk-search] N=4096 steps=4097 chunk=8
+[chunk-search] N=4096 steps=4097 chunk=16
+[chunk-search] N=4096 steps=4097 chunk=32
+[chunk-search] N=4096 steps=4097 chunk=64
+[chunk-search] N=4096 steps=4097 chunk=128
+[chunk-search] N=4096 steps=4097 chunk=256
+[chunk-search] N=8192 steps=4096 chunk=1
+[chunk-search] N=8192 steps=4096 chunk=2
+[chunk-search] N=8192 steps=4096 chunk=4
+[chunk-search] N=8192 steps=4096 chunk=8
+[chunk-search] N=8192 steps=4096 chunk=16
+[chunk-search] N=8192 steps=4096 chunk=32
+[chunk-search] N=8192 steps=4096 chunk=64
+[chunk-search] N=8192 steps=4096 chunk=128
+[chunk-search] N=8192 steps=4096 chunk=256
+[chunk-search] N=8192 steps=4097 chunk=1
+[chunk-search] N=8192 steps=4097 chunk=2
+[chunk-search] N=8192 steps=4097 chunk=4
+[chunk-search] N=8192 steps=4097 chunk=8
+[chunk-search] N=8192 steps=4097 chunk=16
+[chunk-search] N=8192 steps=4097 chunk=32
+[chunk-search] N=8192 steps=4097 chunk=64
+[chunk-search] N=8192 steps=4097 chunk=128
+[chunk-search] N=8192 steps=4097 chunk=256
+2026-11-10T15:07:45.402393+00:00 Finished chunk_search
+2026-11-10T15:07:45.408367+00:00 Final configuration: (256, 8, 2)
+2026-11-10T15:07:45.470321+00:00 Starting final
+[final] N=1024 numpy=0.472s pytorch=2.276s optimized=0.058s speedup=39.31x
+[final] N=2048 numpy=0.784s pytorch=2.183s optimized=0.073s speedup=30.03x
+[final] N=4096 numpy=1.339s pytorch=2.096s optimized=0.100s speedup=20.97x
+[final] N=8192 numpy=3.139s pytorch=2.030s optimized=0.151s speedup=13.45x
+2026-11-10T15:08:07.016656+00:00 Finished final
+2026-11-10T15:08:07.017049+00:00 Starting convergence
+{"phase": "convergence", "n_samples": 4096, "dz": 0.001, "steps": 4096, "target_z": 4.096, "seconds": 1.515261692002241, "relative_l2_to_smallest_dz": 0.0002773652704171385, "energy": 2.00001403058696, "finite": true}
+{"phase": "convergence", "n_samples": 4096, "dz": 0.0005, "steps": 8192, "target_z": 4.096, "seconds": 3.0210840299987467, "relative_l2_to_smallest_dz": 9.241734437610303e-05, "energy": 2.0000070135667194, "finite": true}
+{"phase": "convergence", "n_samples": 4096, "dz": 0.00025, "steps": 16384, "target_z": 4.096, "seconds": 5.704918601000827, "relative_l2_to_smallest_dz": 0.0, "energy": 2.00000350326487, "finite": true}
+2026-11-10T15:08:18.364819+00:00 Finished convergence
+2026-11-10T15:08:18.367605+00:00 All experiment phases complete

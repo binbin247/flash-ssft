@@ -1,0 +1,2 @@
+2026-11-10T15:06:28.787962+00:00 64 candidates recovered; all successful; selection={"block": 256, "num_warps": 8, "geometric_mean_seconds": 0.09392851810954157, "sample_count": 4}
+Original stdout before SSH disconnection is preserved in kernel_search.interrupted.log; later console output was unavailable. Complete measurements are in kernel_search.json.

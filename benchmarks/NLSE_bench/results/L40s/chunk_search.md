@@ -1,0 +1,2397 @@
+# chunk_search
+
+Rows: 72
+
+## Selection
+
+```json
+{
+  "block": 128,
+  "num_warps": 4,
+  "geometric_mean_seconds": 0.07318427898442424,
+  "sample_count": 4
+}
+```
+
+## Rows
+
+```json
+[
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 2.0071647465229034,
+    "capture_seconds": 0.012937430292367935,
+    "full_chunks": 4096,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05808947372436524,
+        0.05807206344604492,
+        0.05806694412231445,
+        0.05809257507324219,
+        0.058057727813720705,
+        0.05807206344604492,
+        0.05805875015258789
+      ],
+      "steady_median_seconds": 0.05807206344604492,
+      "steady_min_seconds": 0.058057727813720705,
+      "steady_max_seconds": 0.05809257507324219,
+      "steady_steps_per_second": 70533.05422504258,
+      "steady_samples_steps_per_second": 72225847.5264436
+    },
+    "memory": {
+      "memory_allocated_bytes": 83456,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0005695857107639313,
+    "capture_seconds": 0.0019203871488571167,
+    "full_chunks": 2048,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.055158817291259765,
+        0.05515564727783203,
+        0.05515059280395508,
+        0.055180286407470705,
+        0.05517004776000976,
+        0.055177215576171876,
+        0.05516185760498047
+      ],
+      "steady_median_seconds": 0.05516185760498047,
+      "steady_min_seconds": 0.05515059280395508,
+      "steady_max_seconds": 0.055180286407470705,
+      "steady_steps_per_second": 74254.20712500044,
+      "steady_samples_steps_per_second": 76036308.09600045
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.0005527995526790619,
+    "capture_seconds": 0.0023499764502048492,
+    "full_chunks": 1024,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05341491317749023,
+        0.05332582473754883,
+        0.0533309440612793,
+        0.053318656921386716,
+        0.053310462951660156,
+        0.053305343627929686,
+        0.053308414459228515
+      ],
+      "steady_median_seconds": 0.053318656921386716,
+      "steady_min_seconds": 0.053305343627929686,
+      "steady_max_seconds": 0.05341491317749023,
+      "steady_steps_per_second": 76821.13985052478,
+      "steady_samples_steps_per_second": 78664847.20693737
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0006681308150291443,
+    "capture_seconds": 0.003236483782529831,
+    "full_chunks": 512,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05250867080688477,
+        0.052618240356445314,
+        0.052506622314453126,
+        0.05251071929931641,
+        0.052496383666992184,
+        0.05249740982055664,
+        0.052496383666992184
+      ],
+      "steady_median_seconds": 0.052506622314453126,
+      "steady_min_seconds": 0.052496383666992184,
+      "steady_max_seconds": 0.052618240356445314,
+      "steady_steps_per_second": 78009.20759042089,
+      "steady_samples_steps_per_second": 79881428.57259099
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.0007718838751316071,
+    "capture_seconds": 0.005171496421098709,
+    "full_chunks": 256,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05215641784667969,
+        0.052132865905761716,
+        0.052125694274902344,
+        0.05209088134765625,
+        0.05208063888549805,
+        0.05207654571533203,
+        0.05207654571533203
+      ],
+      "steady_median_seconds": 0.05209088134765625,
+      "steady_min_seconds": 0.05207654571533203,
+      "steady_max_seconds": 0.05215641784667969,
+      "steady_steps_per_second": 78631.80453145267,
+      "steady_samples_steps_per_second": 80518967.84020753
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.0005887970328330994,
+    "capture_seconds": 0.008408766239881516,
+    "full_chunks": 128,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.0519024658203125,
+        0.05189324951171875,
+        0.05189529418945313,
+        0.05189529418945313,
+        0.05189734268188476,
+        0.051896320343017575,
+        0.0518922233581543
+      ],
+      "steady_median_seconds": 0.05189529418945313,
+      "steady_min_seconds": 0.0518922233581543,
+      "steady_max_seconds": 0.0519024658203125,
+      "steady_steps_per_second": 78928.1584000047,
+      "steady_samples_steps_per_second": 80822434.20160481
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.0005390457808971405,
+    "capture_seconds": 0.015225566923618317,
+    "full_chunks": 64,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.051798015594482424,
+        0.051792896270751954,
+        0.05179596710205078,
+        0.05178572845458984,
+        0.05178675079345703,
+        0.05178265762329102,
+        0.051783679962158206
+      ],
+      "steady_median_seconds": 0.05178675079345703,
+      "steady_min_seconds": 0.05178265762329102,
+      "steady_max_seconds": 0.051798015594482424,
+      "steady_steps_per_second": 79093.58933014015,
+      "steady_samples_steps_per_second": 80991835.47406352
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0005556270480155945,
+    "capture_seconds": 0.028613615781068802,
+    "full_chunks": 32,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.0517498893737793,
+        0.051738624572753904,
+        0.05173759841918945,
+        0.05173452758789063,
+        0.05173657608032227,
+        0.05173555374145508,
+        0.05173452758789063
+      ],
+      "steady_median_seconds": 0.05173657608032227,
+      "steady_min_seconds": 0.05173452758789063,
+      "steady_max_seconds": 0.0517498893737793,
+      "steady_steps_per_second": 79170.29518228772,
+      "steady_samples_steps_per_second": 81070382.26666263
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.0005710870027542114,
+    "capture_seconds": 0.05599476769566536,
+    "full_chunks": 16,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.051730430603027344,
+        0.05172326278686523,
+        0.051794944763183595,
+        0.0517212142944336,
+        0.05171507263183594,
+        0.051714046478271485,
+        0.05171200180053711
+      ],
+      "steady_median_seconds": 0.0517212142944336,
+      "steady_min_seconds": 0.05171200180053711,
+      "steady_max_seconds": 0.051794944763183595,
+      "steady_steps_per_second": 79193.80965579582,
+      "steady_samples_steps_per_second": 81094461.08753492
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.0005846284329891205,
+    "capture_seconds": 0.0016357190907001495,
+    "full_chunks": 4097,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.058502143859863284,
+        0.05850624084472656,
+        0.058502143859863284,
+        0.058499073028564455,
+        0.05850009536743164,
+        0.05852467346191406,
+        0.0584796142578125
+      ],
+      "steady_median_seconds": 0.058502143859863284,
+      "steady_min_seconds": 0.0584796142578125,
+      "steady_max_seconds": 0.05852467346191406,
+      "steady_steps_per_second": 70031.62157294614,
+      "steady_samples_steps_per_second": 71712380.49069685
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0005634203553199768,
+    "capture_seconds": 0.0018024742603302002,
+    "full_chunks": 2048,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05507583999633789,
+        0.055000064849853515,
+        0.05506047821044922,
+        0.05507174301147461,
+        0.05507174301147461,
+        0.055065601348876954,
+        0.0550645751953125
+      ],
+      "steady_median_seconds": 0.055065601348876954,
+      "steady_min_seconds": 0.055000064849853515,
+      "steady_max_seconds": 0.05507583999633789,
+      "steady_steps_per_second": 74402.16577392479,
+      "steady_samples_steps_per_second": 76187817.75249898
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.00042816996574401855,
+    "capture_seconds": 0.0022276416420936584,
+    "full_chunks": 1024,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05329612731933594,
+        0.05329510498046875,
+        0.05333193588256836,
+        0.053310462951660156,
+        0.0533125114440918,
+        0.05330739212036133,
+        0.05329817581176758
+      ],
+      "steady_median_seconds": 0.05330739212036133,
+      "steady_min_seconds": 0.05329510498046875,
+      "steady_max_seconds": 0.05333193588256836,
+      "steady_steps_per_second": 76856.13264947371,
+      "steady_samples_steps_per_second": 78700679.83306108
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0004292502999305725,
+    "capture_seconds": 0.003351610153913498,
+    "full_chunks": 512,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05255987167358398,
+        0.052529151916503904,
+        0.05263974380493164,
+        0.052528129577636716,
+        0.052528129577636716,
+        0.052498432159423826,
+        0.052501502990722655
+      ],
+      "steady_median_seconds": 0.052528129577636716,
+      "steady_min_seconds": 0.052498432159423826,
+      "steady_max_seconds": 0.05263974380493164,
+      "steady_steps_per_second": 77996.30470269502,
+      "steady_samples_steps_per_second": 79868216.0155597
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.00044125691056251526,
+    "capture_seconds": 0.005061998963356018,
+    "full_chunks": 256,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.052103168487548826,
+        0.052109310150146484,
+        0.05209600067138672,
+        0.05209395217895508,
+        0.05209292984008789,
+        0.05209907150268555,
+        0.05209798431396485
+      ],
+      "steady_median_seconds": 0.05209798431396485,
+      "steady_min_seconds": 0.05209292984008789,
+      "steady_max_seconds": 0.052109310150146484,
+      "steady_steps_per_second": 78640.27858179151,
+      "steady_samples_steps_per_second": 80527645.26775451
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.00043075159192085266,
+    "capture_seconds": 0.00810297206044197,
+    "full_chunks": 128,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.051932159423828124,
+        0.05192499160766602,
+        0.05193011093139648,
+        0.05197615814208984,
+        0.05192697525024414,
+        0.05192499160766602,
+        0.051929088592529295
+      ],
+      "steady_median_seconds": 0.051929088592529295,
+      "steady_min_seconds": 0.05192499160766602,
+      "steady_max_seconds": 0.05197615814208984,
+      "steady_steps_per_second": 78896.05057673609,
+      "steady_samples_steps_per_second": 80789555.79057775
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.00043342262506484985,
+    "capture_seconds": 0.014718480408191681,
+    "full_chunks": 64,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.051833854675292966,
+        0.0518287353515625,
+        0.051830783843994144,
+        0.051817470550537106,
+        0.05181849670410156,
+        0.051813377380371096,
+        0.05181849670410156
+      ],
+      "steady_median_seconds": 0.05181849670410156,
+      "steady_min_seconds": 0.051813377380371096,
+      "steady_max_seconds": 0.051833854675292966,
+      "steady_steps_per_second": 79064.43182624617,
+      "steady_samples_steps_per_second": 80961978.19007608
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.00042962655425071716,
+    "capture_seconds": 0.027883779257535934,
+    "full_chunks": 32,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.051775489807128906,
+        0.05176729583740235,
+        0.05176627349853516,
+        0.05176729583740235,
+        0.051784702301025394,
+        0.05176627349853516,
+        0.05176422500610352
+      ],
+      "steady_median_seconds": 0.05176729583740235,
+      "steady_min_seconds": 0.05176422500610352,
+      "steady_max_seconds": 0.051784702301025394,
+      "steady_steps_per_second": 79142.63114821384,
+      "steady_samples_steps_per_second": 81042054.29577097
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 1024,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.00048549845814704895,
+    "capture_seconds": 0.055805597454309464,
+    "full_chunks": 16,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.05177036666870117,
+        0.05175296020507812,
+        0.05175603103637695,
+        0.051748863220214845,
+        0.05175398254394531,
+        0.051748863220214845,
+        0.05175091171264649
+      ],
+      "steady_median_seconds": 0.05175296020507812,
+      "steady_min_seconds": 0.051748863220214845,
+      "steady_max_seconds": 0.05177036666870117,
+      "steady_steps_per_second": 79164.55375238598,
+      "steady_samples_steps_per_second": 81064503.04244325
+    },
+    "memory": {
+      "memory_allocated_bytes": 91648,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.3524731919169426,
+    "capture_seconds": 0.004546280950307846,
+    "full_chunks": 4096,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07281459045410156,
+        0.0728279037475586,
+        0.07281664276123047,
+        0.0728309783935547,
+        0.07282892608642579,
+        0.07283507537841796,
+        0.07282278442382813
+      ],
+      "steady_median_seconds": 0.0728279037475586,
+      "steady_min_seconds": 0.07281459045410156,
+      "steady_max_seconds": 0.07283507537841796,
+      "steady_steps_per_second": 56242.17901695832,
+      "steady_samples_steps_per_second": 115183982.62673064
+    },
+    "memory": {
+      "memory_allocated_bytes": 165376,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.000575631856918335,
+    "capture_seconds": 0.0019350536167621613,
+    "full_chunks": 2048,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06945996856689453,
+        0.06944870758056641,
+        0.06946406555175781,
+        0.06945177459716798,
+        0.06945587158203125,
+        0.06945894622802734,
+        0.06943334197998047
+      ],
+      "steady_median_seconds": 0.06945587158203125,
+      "steady_min_seconds": 0.06943334197998047,
+      "steady_max_seconds": 0.06946406555175781,
+      "steady_steps_per_second": 58972.69599680131,
+      "steady_samples_steps_per_second": 120776081.40144908
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.0005340911448001862,
+    "capture_seconds": 0.0022345148026943207,
+    "full_chunks": 1024,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06776012420654297,
+        0.06776012420654297,
+        0.06776319885253906,
+        0.06776934051513672,
+        0.06776422119140625,
+        0.0677570571899414,
+        0.06775398254394531
+      ],
+      "steady_median_seconds": 0.06776012420654297,
+      "steady_min_seconds": 0.06775398254394531,
+      "steady_max_seconds": 0.06776934051513672,
+      "steady_steps_per_second": 60448.53146246871,
+      "steady_samples_steps_per_second": 123798592.43513592
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0005411729216575623,
+    "capture_seconds": 0.0030637718737125397,
+    "full_chunks": 512,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06679756927490234,
+        0.06678630065917969,
+        0.0668006362915039,
+        0.06679039764404297,
+        0.06678937530517579,
+        0.06679347229003907,
+        0.0667852783203125
+      ],
+      "steady_median_seconds": 0.06679039764404297,
+      "steady_min_seconds": 0.0667852783203125,
+      "steady_max_seconds": 0.0668006362915039,
+      "steady_steps_per_second": 61326.18077570798,
+      "steady_samples_steps_per_second": 125596018.22864994
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.0005380883812904358,
+    "capture_seconds": 0.004647277295589447,
+    "full_chunks": 256,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06643405151367188,
+        0.06641970825195312,
+        0.06641254425048829,
+        0.06641254425048829,
+        0.06642176055908203,
+        0.06641970825195312,
+        0.06641254425048829
+      ],
+      "steady_median_seconds": 0.06641970825195312,
+      "steady_min_seconds": 0.06641254425048829,
+      "steady_max_seconds": 0.06643405151367188,
+      "steady_steps_per_second": 61668.44311424018,
+      "steady_samples_steps_per_second": 126296971.49796389
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.0005559585988521576,
+    "capture_seconds": 0.007863558828830719,
+    "full_chunks": 128,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06621491241455078,
+        0.06620569610595703,
+        0.06620057678222656,
+        0.0662456283569336,
+        0.06623641967773437,
+        0.06622207641601563,
+        0.06622207641601563
+      ],
+      "steady_median_seconds": 0.06622207641601563,
+      "steady_min_seconds": 0.06620057678222656,
+      "steady_max_seconds": 0.0662456283569336,
+      "steady_steps_per_second": 61852.48517833237,
+      "steady_samples_steps_per_second": 126673889.64522469
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.0006183795630931854,
+    "capture_seconds": 0.01441676914691925,
+    "full_chunks": 64,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.0661217269897461,
+        0.06611251068115234,
+        0.06610944366455078,
+        0.0662630386352539,
+        0.06610636901855468,
+        0.06610636901855468,
+        0.06611449432373047
+      ],
+      "steady_median_seconds": 0.06611251068115234,
+      "steady_min_seconds": 0.06610636901855468,
+      "steady_max_seconds": 0.0662630386352539,
+      "steady_steps_per_second": 61954.99093589417,
+      "steady_samples_steps_per_second": 126883821.43671127
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0008201338350772858,
+    "capture_seconds": 0.02854195237159729,
+    "full_chunks": 32,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06607667541503906,
+        0.06605721282958985,
+        0.06605209350585937,
+        0.06604902648925781,
+        0.06604595184326172,
+        0.06604902648925781,
+        0.0660469741821289
+      ],
+      "steady_median_seconds": 0.06604902648925781,
+      "steady_min_seconds": 0.06604595184326172,
+      "steady_max_seconds": 0.06607667541503906,
+      "steady_steps_per_second": 62014.54007298914,
+      "steady_samples_steps_per_second": 127005778.06948176
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.0005764216184616089,
+    "capture_seconds": 0.05558709800243378,
+    "full_chunks": 16,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06604185485839843,
+        0.0660316162109375,
+        0.06604083251953125,
+        0.06602957153320313,
+        0.0660346908569336,
+        0.06603366088867188,
+        0.06602751922607422
+      ],
+      "steady_median_seconds": 0.06603366088867188,
+      "steady_min_seconds": 0.06602751922607422,
+      "steady_max_seconds": 0.06604185485839843,
+      "steady_steps_per_second": 62028.970450473265,
+      "steady_samples_steps_per_second": 127035331.48256925
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.0005896687507629395,
+    "capture_seconds": 0.0016627609729766846,
+    "full_chunks": 4097,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07260364532470703,
+        0.07260364532470703,
+        0.07258624267578125,
+        0.07258009338378907,
+        0.07261695861816406,
+        0.07256985473632813,
+        0.07259340667724609
+      ],
+      "steady_median_seconds": 0.07259340667724609,
+      "steady_min_seconds": 0.07256985473632813,
+      "steady_max_seconds": 0.07261695861816406,
+      "steady_steps_per_second": 56437.63239016274,
+      "steady_samples_steps_per_second": 115584271.13505329
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0005902983248233795,
+    "capture_seconds": 0.0019181817770004272,
+    "full_chunks": 2048,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06962687683105469,
+        0.06962175750732422,
+        0.06961971282958984,
+        0.06962278747558594,
+        0.06961663818359375,
+        0.06961766052246093,
+        0.06962790679931641
+      ],
+      "steady_median_seconds": 0.06962175750732422,
+      "steady_min_seconds": 0.06961663818359375,
+      "steady_max_seconds": 0.06962790679931641,
+      "steady_steps_per_second": 58846.54663549674,
+      "steady_samples_steps_per_second": 120517727.50949733
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.00042513012886047363,
+    "capture_seconds": 0.002231016755104065,
+    "full_chunks": 1024,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06776831817626953,
+        0.06776319885253906,
+        0.06776422119140625,
+        0.06776422119140625,
+        0.06777340698242187,
+        0.06775907135009765,
+        0.06776831817626953
+      ],
+      "steady_median_seconds": 0.06776422119140625,
+      "steady_min_seconds": 0.06775907135009765,
+      "steady_max_seconds": 0.06777340698242187,
+      "steady_steps_per_second": 60459.63382988861,
+      "steady_samples_steps_per_second": 123821330.08361188
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.00042912736535072327,
+    "capture_seconds": 0.003087688237428665,
+    "full_chunks": 512,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06685081481933594,
+        0.06683135986328125,
+        0.06684159851074219,
+        0.06684671783447266,
+        0.06683545684814453,
+        0.0668375015258789,
+        0.06685078430175781
+      ],
+      "steady_median_seconds": 0.06684159851074219,
+      "steady_min_seconds": 0.06683135986328125,
+      "steady_max_seconds": 0.06685081481933594,
+      "steady_steps_per_second": 61294.16547902526,
+      "steady_samples_steps_per_second": 125530450.90104373
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.00040416792035102844,
+    "capture_seconds": 0.004623986780643463,
+    "full_chunks": 256,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06645452880859375,
+        0.0664463348388672,
+        0.0664432601928711,
+        0.06644735717773438,
+        0.06645145416259765,
+        0.0664453125,
+        0.0664453125
+      ],
+      "steady_median_seconds": 0.0664463348388672,
+      "steady_min_seconds": 0.0664432601928711,
+      "steady_max_seconds": 0.06645452880859375,
+      "steady_steps_per_second": 61658.78087836225,
+      "steady_samples_steps_per_second": 126277183.2388859
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.00042591989040374756,
+    "capture_seconds": 0.008044306188821793,
+    "full_chunks": 128,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06626406097412109,
+        0.06625894165039062,
+        0.06626406097412109,
+        0.06625997161865234,
+        0.06625894165039062,
+        0.06625382232666016,
+        0.06625997161865234
+      ],
+      "steady_median_seconds": 0.06625997161865234,
+      "steady_min_seconds": 0.06625382232666016,
+      "steady_max_seconds": 0.06626406097412109,
+      "steady_steps_per_second": 61832.202760054985,
+      "steady_samples_steps_per_second": 126632351.25259261
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.0004243329167366028,
+    "capture_seconds": 0.014146894216537476,
+    "full_chunks": 64,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06614118194580078,
+        0.06613299560546874,
+        0.06614527893066406,
+        0.06612786865234375,
+        0.06613196563720704,
+        0.06612582397460938,
+        0.06613811492919922
+      ],
+      "steady_median_seconds": 0.06613299560546874,
+      "steady_min_seconds": 0.06612582397460938,
+      "steady_max_seconds": 0.06614527893066406,
+      "steady_steps_per_second": 61950.92120794852,
+      "steady_samples_steps_per_second": 126875486.63387857
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.00043537840247154236,
+    "capture_seconds": 0.02688877284526825,
+    "full_chunks": 32,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.06611251068115234,
+        0.06608281707763672,
+        0.06608179473876953,
+        0.06608076477050781,
+        0.0660848617553711,
+        0.06608179473876953,
+        0.06607974243164062
+      ],
+      "steady_median_seconds": 0.06608179473876953,
+      "steady_min_seconds": 0.06607974243164062,
+      "steady_max_seconds": 0.06611251068115234,
+      "steady_steps_per_second": 61998.92143056961,
+      "steady_samples_steps_per_second": 126973791.08980656
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 2048,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.00041696056723594666,
+    "capture_seconds": 0.05299399420619011,
+    "full_chunks": 16,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.0660684814453125,
+        0.06605824279785157,
+        0.06606130981445313,
+        0.06605619049072266,
+        0.06606028747558594,
+        0.06605516815185547,
+        0.06605824279785157
+      ],
+      "steady_median_seconds": 0.06605824279785157,
+      "steady_min_seconds": 0.06605516815185547,
+      "steady_max_seconds": 0.0660684814453125,
+      "steady_steps_per_second": 62021.02608961993,
+      "steady_samples_steps_per_second": 127019061.43154162
+    },
+    "memory": {
+      "memory_allocated_bytes": 181760,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.34911420568823814,
+    "capture_seconds": 0.005065452307462692,
+    "full_chunks": 4096,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.08160562896728515,
+        0.08159846496582031,
+        0.08160050964355468,
+        0.08160768127441406,
+        0.08159232330322265,
+        0.08158207702636719,
+        0.08157901000976563
+      ],
+      "steady_median_seconds": 0.08159846496582031,
+      "steady_min_seconds": 0.08157901000976563,
+      "steady_max_seconds": 0.08160768127441406,
+      "steady_steps_per_second": 50197.02272237252,
+      "steady_samples_steps_per_second": 205607005.07083786
+    },
+    "memory": {
+      "memory_allocated_bytes": 329216,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.000549711287021637,
+    "capture_seconds": 0.0018606744706630707,
+    "full_chunks": 2048,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07851110076904297,
+        0.07851007843017578,
+        0.07850902557373046,
+        0.07852134704589844,
+        0.07851622772216797,
+        0.07851417541503906,
+        0.0785059814453125
+      ],
+      "steady_median_seconds": 0.07851110076904297,
+      "steady_min_seconds": 0.0785059814453125,
+      "steady_max_seconds": 0.07852134704589844,
+      "steady_steps_per_second": 52170.966396831594,
+      "steady_samples_steps_per_second": 213692278.3614222
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.000577043741941452,
+    "capture_seconds": 0.0022917650640010834,
+    "full_chunks": 1024,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07687987518310548,
+        0.07687577819824219,
+        0.07686860656738281,
+        0.07686860656738281,
+        0.07686553955078125,
+        0.07686962890625,
+        0.07686656188964844
+      ],
+      "steady_median_seconds": 0.07686860656738281,
+      "steady_min_seconds": 0.07686553955078125,
+      "steady_max_seconds": 0.07687987518310548,
+      "steady_steps_per_second": 53285.73240636875,
+      "steady_samples_steps_per_second": 218258359.9364864
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0005321688950061798,
+    "capture_seconds": 0.0030953101813793182,
+    "full_chunks": 512,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07599104309082032,
+        0.07598284912109375,
+        0.07598489379882813,
+        0.07598284912109375,
+        0.07608525085449219,
+        0.07598387145996094,
+        0.07598592376708985
+      ],
+      "steady_median_seconds": 0.07598489379882813,
+      "steady_min_seconds": 0.07598284912109375,
+      "steady_max_seconds": 0.07608525085449219,
+      "steady_steps_per_second": 53905.45140254142,
+      "steady_samples_steps_per_second": 220796728.94480965
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.0008037164807319641,
+    "capture_seconds": 0.005063410848379135,
+    "full_chunks": 256,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07556095886230468,
+        0.07555788421630859,
+        0.07556198120117187,
+        0.07555891418457031,
+        0.07555276489257813,
+        0.07555788421630859,
+        0.07555891418457031
+      ],
+      "steady_median_seconds": 0.07555891418457031,
+      "steady_min_seconds": 0.07555276489257813,
+      "steady_max_seconds": 0.07556198120117187,
+      "steady_steps_per_second": 54209.35496762914,
+      "steady_samples_steps_per_second": 222041517.94740894
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.0005422160029411316,
+    "capture_seconds": 0.008822519332170486,
+    "full_chunks": 128,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07537868499755859,
+        0.07537049865722656,
+        0.07536844635009765,
+        0.07536434936523438,
+        0.07536128234863282,
+        0.07537152099609375,
+        0.07537459564208984
+      ],
+      "steady_median_seconds": 0.07537049865722656,
+      "steady_min_seconds": 0.07536128234863282,
+      "steady_max_seconds": 0.07537868499755859,
+      "steady_steps_per_second": 54344.87064531679,
+      "steady_samples_steps_per_second": 222596590.16321757
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.0005913339555263519,
+    "capture_seconds": 0.01485193520784378,
+    "full_chunks": 64,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07526297760009766,
+        0.07525373077392578,
+        0.0752547836303711,
+        0.07525682830810547,
+        0.07526297760009766,
+        0.0752547836303711,
+        0.07525580596923828
+      ],
+      "steady_median_seconds": 0.07525580596923828,
+      "steady_min_seconds": 0.07525373077392578,
+      "steady_max_seconds": 0.07526297760009766,
+      "steady_steps_per_second": 54427.69427882135,
+      "steady_samples_steps_per_second": 222935835.76605225
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0005430839955806732,
+    "capture_seconds": 0.028054486960172653,
+    "full_chunks": 32,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07521587371826172,
+        0.07521485137939453,
+        0.07520665740966796,
+        0.07520767974853515,
+        0.07520972442626953,
+        0.07520665740966796,
+        0.07520665740966796
+      ],
+      "steady_median_seconds": 0.07520767974853515,
+      "steady_min_seconds": 0.07520665740966796,
+      "steady_max_seconds": 0.07521587371826172,
+      "steady_steps_per_second": 54462.5231584781,
+      "steady_samples_steps_per_second": 223078494.8571263
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.0005520470440387726,
+    "capture_seconds": 0.05555705726146698,
+    "full_chunks": 16,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07519232177734375,
+        0.07518208312988281,
+        0.0751800308227539,
+        0.0751800308227539,
+        0.07518822479248047,
+        0.07517798614501953,
+        0.07517798614501953
+      ],
+      "steady_median_seconds": 0.0751800308227539,
+      "steady_min_seconds": 0.07517798614501953,
+      "steady_max_seconds": 0.07519232177734375,
+      "steady_steps_per_second": 54482.552815877665,
+      "steady_samples_steps_per_second": 223160536.33383492
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.0005599185824394226,
+    "capture_seconds": 0.0016690902411937714,
+    "full_chunks": 4097,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.0819609603881836,
+        0.08204287719726562,
+        0.08196915435791016,
+        0.0819752960205078,
+        0.08197119903564454,
+        0.08195584106445312,
+        0.0819752960205078
+      ],
+      "steady_median_seconds": 0.08197119903564454,
+      "steady_min_seconds": 0.08195584106445312,
+      "steady_max_seconds": 0.08204287719726562,
+      "steady_steps_per_second": 49980.96951367579,
+      "steady_samples_steps_per_second": 204722051.12801602
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0005717985332012177,
+    "capture_seconds": 0.001864887773990631,
+    "full_chunks": 2048,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07873228454589844,
+        0.07873126220703125,
+        0.07873228454589844,
+        0.07872819519042969,
+        0.07872921752929687,
+        0.07873331451416016,
+        0.07872614288330078
+      ],
+      "steady_median_seconds": 0.07873126220703125,
+      "steady_min_seconds": 0.07872614288330078,
+      "steady_max_seconds": 0.07873331451416016,
+      "steady_steps_per_second": 52037.778706335914,
+      "steady_samples_steps_per_second": 213146741.5811519
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.0004345439374446869,
+    "capture_seconds": 0.002230975776910782,
+    "full_chunks": 1024,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07677235412597656,
+        0.07677849578857422,
+        0.07677747344970703,
+        0.07677645111083985,
+        0.07676825714111328,
+        0.07676723480224609,
+        0.07676620483398437
+      ],
+      "steady_median_seconds": 0.07677235412597656,
+      "steady_min_seconds": 0.07676620483398437,
+      "steady_max_seconds": 0.07677849578857422,
+      "steady_steps_per_second": 53365.564292547155,
+      "steady_samples_steps_per_second": 218585351.34227315
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0004075057804584503,
+    "capture_seconds": 0.0030341893434524536,
+    "full_chunks": 512,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07604838562011719,
+        0.07603507232666015,
+        0.0760289306640625,
+        0.07602585601806641,
+        0.07604019165039062,
+        0.07603302764892578,
+        0.07603302764892578
+      ],
+      "steady_median_seconds": 0.07603302764892578,
+      "steady_min_seconds": 0.07602585601806641,
+      "steady_max_seconds": 0.07604838562011719,
+      "steady_steps_per_second": 53884.477926059335,
+      "steady_samples_steps_per_second": 220710821.58513904
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.0004606284201145172,
+    "capture_seconds": 0.004635654389858246,
+    "full_chunks": 256,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07559168243408203,
+        0.07558860778808593,
+        0.07558553314208985,
+        0.07559168243408203,
+        0.07559270477294922,
+        0.07558553314208985,
+        0.07558451080322266
+      ],
+      "steady_median_seconds": 0.07558860778808593,
+      "steady_min_seconds": 0.07558451080322266,
+      "steady_max_seconds": 0.07559270477294922,
+      "steady_steps_per_second": 54201.2893197612,
+      "steady_samples_steps_per_second": 222008481.05374187
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.00043262168765068054,
+    "capture_seconds": 0.0077643021941185,
+    "full_chunks": 128,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07542681884765624,
+        0.0754176025390625,
+        0.07542476654052735,
+        0.07541350555419922,
+        0.07541145324707031,
+        0.07541043090820312,
+        0.07541657257080078
+      ],
+      "steady_median_seconds": 0.07541657257080078,
+      "steady_min_seconds": 0.07541043090820312,
+      "steady_max_seconds": 0.07542681884765624,
+      "steady_steps_per_second": 54324.92965858071,
+      "steady_samples_steps_per_second": 222514911.8815466
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.00047800689935684204,
+    "capture_seconds": 0.01828879863023758,
+    "full_chunks": 64,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07537049865722656,
+        0.07531724548339844,
+        0.07529881286621094,
+        0.0752916488647461,
+        0.07529267120361328,
+        0.07529472351074219,
+        0.07529984283447265
+      ],
+      "steady_median_seconds": 0.07529881286621094,
+      "steady_min_seconds": 0.0752916488647461,
+      "steady_max_seconds": 0.07537049865722656,
+      "steady_steps_per_second": 54409.88833754189,
+      "steady_samples_steps_per_second": 222862902.63057157
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0004355013370513916,
+    "capture_seconds": 0.026974398642778397,
+    "full_chunks": 32,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.075251708984375,
+        0.07524556732177734,
+        0.07525273895263672,
+        0.07525273895263672,
+        0.07524147033691406,
+        0.07524454498291015,
+        0.07524147033691406
+      ],
+      "steady_median_seconds": 0.07524556732177734,
+      "steady_min_seconds": 0.07524147033691406,
+      "steady_max_seconds": 0.07525273895263672,
+      "steady_steps_per_second": 54448.390062363964,
+      "steady_samples_steps_per_second": 223020605.6954428
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 4096,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.0004214644432067871,
+    "capture_seconds": 0.05301978811621666,
+    "full_chunks": 16,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.07523430633544922,
+        0.07521894073486328,
+        0.07522406768798828,
+        0.07521485137939453,
+        0.07521894073486328,
+        0.075219970703125,
+        0.07521791839599609
+      ],
+      "steady_median_seconds": 0.07521894073486328,
+      "steady_min_seconds": 0.07521485137939453,
+      "steady_max_seconds": 0.07523430633544922,
+      "steady_steps_per_second": 54467.6641278608,
+      "steady_samples_steps_per_second": 223099552.26771784
+    },
+    "memory": {
+      "memory_allocated_bytes": 361984,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.4508574642241001,
+    "capture_seconds": 0.0044088214635849,
+    "full_chunks": 4096,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11560959625244141,
+        0.11560038757324219,
+        0.11561062622070313,
+        0.11560243225097656,
+        0.1155962905883789,
+        0.1155962905883789,
+        0.11559117126464843
+      ],
+      "steady_median_seconds": 0.11560038757324219,
+      "steady_min_seconds": 0.11559117126464843,
+      "steady_max_seconds": 0.11561062622070313,
+      "steady_steps_per_second": 35432.40715698166,
+      "steady_samples_steps_per_second": 290262279.42999375
+    },
+    "memory": {
+      "memory_allocated_bytes": 656896,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0005986690521240234,
+    "capture_seconds": 0.0019093044102191925,
+    "full_chunks": 2048,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11247206115722656,
+        0.11247103881835938,
+        0.11247103881835938,
+        0.11249152374267578,
+        0.11247411346435547,
+        0.11247718048095703,
+        0.112468994140625
+      ],
+      "steady_median_seconds": 0.11247206115722656,
+      "steady_min_seconds": 0.112468994140625,
+      "steady_max_seconds": 0.11249152374267578,
+      "steady_steps_per_second": 36417.93311028713,
+      "steady_samples_steps_per_second": 298335708.03947216
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.0006006695330142975,
+    "capture_seconds": 0.0023296810686588287,
+    "full_chunks": 1024,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11082137298583984,
+        0.11081830596923828,
+        0.11082342529296875,
+        0.11081523132324218,
+        0.11081212615966797,
+        0.11081318664550781,
+        0.110814208984375
+      ],
+      "steady_median_seconds": 0.11081523132324218,
+      "steady_min_seconds": 0.11081212615966797,
+      "steady_max_seconds": 0.11082342529296875,
+      "steady_steps_per_second": 36962.42791798344,
+      "steady_samples_steps_per_second": 302796209.50412035
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0005779638886451721,
+    "capture_seconds": 0.0031738579273223877,
+    "full_chunks": 512,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10997555541992188,
+        0.10997452545166016,
+        0.10998169708251954,
+        0.10997657775878907,
+        0.1099653091430664,
+        0.10996633911132812,
+        0.10997350311279297
+      ],
+      "steady_median_seconds": 0.10997452545166016,
+      "steady_min_seconds": 0.1099653091430664,
+      "steady_max_seconds": 0.10998169708251954,
+      "steady_steps_per_second": 37244.989084316774,
+      "steady_samples_steps_per_second": 305110950.578723
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.0005591697990894318,
+    "capture_seconds": 0.004699863493442535,
+    "full_chunks": 256,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10955264282226562,
+        0.10955155181884765,
+        0.10956082916259766,
+        0.1095546875,
+        0.1095393295288086,
+        0.10953830718994141,
+        0.10954342651367187
+      ],
+      "steady_median_seconds": 0.10955155181884765,
+      "steady_min_seconds": 0.10953830718994141,
+      "steady_max_seconds": 0.10956082916259766,
+      "steady_steps_per_second": 37388.790318306645,
+      "steady_samples_steps_per_second": 306288970.28756803
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.0005626305937767029,
+    "capture_seconds": 0.008127223700284958,
+    "full_chunks": 128,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.1093355484008789,
+        0.10933042907714843,
+        0.10933760070800781,
+        0.10933452606201172,
+        0.10932838439941406,
+        0.10932121276855469,
+        0.10932326507568359
+      ],
+      "steady_median_seconds": 0.10933042907714843,
+      "steady_min_seconds": 0.10932121276855469,
+      "steady_max_seconds": 0.10933760070800781,
+      "steady_steps_per_second": 37464.40981320653,
+      "steady_samples_steps_per_second": 306908445.18978786
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.0005675442516803741,
+    "capture_seconds": 0.014327853918075562,
+    "full_chunks": 64,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10922598266601563,
+        0.10922086334228516,
+        0.10922803497314452,
+        0.1092300796508789,
+        0.10921676635742188,
+        0.10921676635742188,
+        0.10921881866455078
+      ],
+      "steady_median_seconds": 0.10922086334228516,
+      "steady_min_seconds": 0.10921676635742188,
+      "steady_max_seconds": 0.1092300796508789,
+      "steady_steps_per_second": 37501.99251917305,
+      "steady_samples_steps_per_second": 307216322.71706563
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0005936287343502045,
+    "capture_seconds": 0.027094103395938873,
+    "full_chunks": 32,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10917375946044922,
+        0.10917273712158203,
+        0.1091809310913086,
+        0.10918605041503907,
+        0.10916966247558593,
+        0.10916761779785156,
+        0.10916864013671874
+      ],
+      "steady_median_seconds": 0.10917273712158203,
+      "steady_min_seconds": 0.10916761779785156,
+      "steady_max_seconds": 0.10918605041503907,
+      "steady_steps_per_second": 37518.52438616082,
+      "steady_samples_steps_per_second": 307351751.7714294
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4096,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.0005588792264461517,
+    "capture_seconds": 0.05283628776669502,
+    "full_chunks": 16,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10915840148925782,
+        0.10915430450439453,
+        0.10915430450439453,
+        0.10914611053466797,
+        0.10913996887207031,
+        0.1091409912109375,
+        0.10914611053466797
+      ],
+      "steady_median_seconds": 0.10914611053466797,
+      "steady_min_seconds": 0.10913996887207031,
+      "steady_max_seconds": 0.10915840148925782,
+      "steady_steps_per_second": 37527.677165362584,
+      "steady_samples_steps_per_second": 307426731.3386503
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 1,
+    "compile_seconds": 0.0005749613046646118,
+    "capture_seconds": 0.0016906335949897766,
+    "full_chunks": 4097,
+    "remainder_steps": 0,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11571097564697265,
+        0.11573554992675782,
+        0.11581740570068359,
+        0.1157201919555664,
+        0.11572633361816406,
+        0.11570893096923827,
+        0.11573043060302735
+      ],
+      "steady_median_seconds": 0.11572633361816406,
+      "steady_min_seconds": 0.11570893096923827,
+      "steady_max_seconds": 0.11581740570068359,
+      "steady_steps_per_second": 35402.48681443535,
+      "steady_samples_steps_per_second": 290017171.9838544
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 2,
+    "compile_seconds": 0.0008373372256755829,
+    "capture_seconds": 0.0019947662949562073,
+    "full_chunks": 2048,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11259187316894531,
+        0.11261440277099609,
+        0.11261030578613282,
+        0.11259801483154297,
+        0.1125959701538086,
+        0.11261440277099609,
+        0.11259494018554687
+      ],
+      "steady_median_seconds": 0.11259801483154297,
+      "steady_min_seconds": 0.11259187316894531,
+      "steady_max_seconds": 0.11261440277099609,
+      "steady_steps_per_second": 36386.07666511253,
+      "steady_samples_steps_per_second": 298074740.04060185
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 4,
+    "compile_seconds": 0.0004626736044883728,
+    "capture_seconds": 0.0023468956351280212,
+    "full_chunks": 1024,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11094937896728516,
+        0.11096675109863281,
+        0.11096575927734376,
+        0.11095654296875,
+        0.11095142364501953,
+        0.11095244598388672,
+        0.1109596176147461
+      ],
+      "steady_median_seconds": 0.11095654296875,
+      "steady_min_seconds": 0.11094937896728516,
+      "steady_max_seconds": 0.11096675109863281,
+      "steady_steps_per_second": 36924.36597591083,
+      "steady_samples_steps_per_second": 302484406.0746615
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 8,
+    "compile_seconds": 0.0004490464925765991,
+    "capture_seconds": 0.003237146884202957,
+    "full_chunks": 512,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.11002674865722656,
+        0.1100400619506836,
+        0.11003699493408203,
+        0.11002674865722656,
+        0.11001753234863282,
+        0.11001446533203126,
+        0.11001446533203126
+      ],
+      "steady_median_seconds": 0.11002674865722656,
+      "steady_min_seconds": 0.11001446533203126,
+      "steady_max_seconds": 0.1100400619506836,
+      "steady_steps_per_second": 37236.39978459828,
+      "steady_samples_steps_per_second": 305040587.0354291
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 16,
+    "compile_seconds": 0.00044937804341316223,
+    "capture_seconds": 0.004935160279273987,
+    "full_chunks": 256,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10959974670410157,
+        0.10961612701416015,
+        0.10961203002929687,
+        0.10959564971923828,
+        0.1095884780883789,
+        0.10958643341064453,
+        0.10958950042724609
+      ],
+      "steady_median_seconds": 0.10959564971923828,
+      "steady_min_seconds": 0.10958643341064453,
+      "steady_max_seconds": 0.10961612701416015,
+      "steady_steps_per_second": 37382.870675028425,
+      "steady_samples_steps_per_second": 306240476.56983286
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 32,
+    "compile_seconds": 0.00045062974095344543,
+    "capture_seconds": 0.008265849202871323,
+    "full_chunks": 128,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.1093785629272461,
+        0.1093908462524414,
+        0.10939692687988281,
+        0.10938162994384766,
+        0.10937753295898438,
+        0.10937651062011719,
+        0.10937753295898438
+      ],
+      "steady_median_seconds": 0.1093785629272461,
+      "steady_min_seconds": 0.10937651062011719,
+      "steady_max_seconds": 0.10939692687988281,
+      "steady_steps_per_second": 37457.06553783439,
+      "steady_samples_steps_per_second": 306848280.8859393
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 64,
+    "compile_seconds": 0.00045442208647727966,
+    "capture_seconds": 0.014876104891300201,
+    "full_chunks": 64,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10926898956298828,
+        0.10928230285644532,
+        0.10928230285644532,
+        0.10927308654785156,
+        0.109264892578125,
+        0.10925977325439454,
+        0.10926387023925781
+      ],
+      "steady_median_seconds": 0.10926898956298828,
+      "steady_min_seconds": 0.10925977325439454,
+      "steady_max_seconds": 0.10928230285644532,
+      "steady_steps_per_second": 37494.62694205915,
+      "steady_samples_steps_per_second": 307155983.90934855
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 128,
+    "compile_seconds": 0.0004601702094078064,
+    "capture_seconds": 0.02822011709213257,
+    "full_chunks": 32,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10923110198974609,
+        0.10924748992919922,
+        0.10924031829833984,
+        0.10926796722412109,
+        0.10924230194091797,
+        0.10923212432861328,
+        0.10922188568115235
+      ],
+      "steady_median_seconds": 0.10924031829833984,
+      "steady_min_seconds": 0.10922188568115235,
+      "steady_max_seconds": 0.10926796722412109,
+      "steady_steps_per_second": 37504.46779925085,
+      "steady_samples_steps_per_second": 307236600.211463
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  },
+  {
+    "phase": "chunk_search",
+    "n_samples": 8192,
+    "steps": 4097,
+    "block": 128,
+    "num_warps": 4,
+    "graph_chunk": 256,
+    "compile_seconds": 0.00046862661838531494,
+    "capture_seconds": 0.05576268583536148,
+    "full_chunks": 16,
+    "remainder_steps": 1,
+    "triton_graph": {
+      "repeat_seconds": [
+        0.10920652770996093,
+        0.10921881866455078,
+        0.10930278778076172,
+        0.10920755004882812,
+        0.1091942367553711,
+        0.10920652770996093,
+        0.1091962890625
+      ],
+      "steady_median_seconds": 0.10920652770996093,
+      "steady_min_seconds": 0.1091942367553711,
+      "steady_max_seconds": 0.10930278778076172,
+      "steady_steps_per_second": 37516.07239890574,
+      "steady_samples_steps_per_second": 307331665.0918358
+    },
+    "memory": {
+      "memory_allocated_bytes": 722432,
+      "memory_reserved_bytes": 8388608
+    },
+    "status": "ok"
+  }
+]
+```

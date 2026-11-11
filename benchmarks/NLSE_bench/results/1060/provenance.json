@@ -1,0 +1,16 @@
+{
+  "verified_utc": "2026-11-10T15:06:27.216684+00:00",
+  "source_commit": "9d60f6563f17346029a65e0ccc3272645ab2b2bc",
+  "verified_file_count": 26,
+  "all_expected_source_hashes_match": true,
+  "remote_git_head": "32a83798b753e84268a738c0a42ede39e6669228",
+  "note": "The working tree was synchronized with git archive. Raw git_commit reports the old repository HEAD; source_commit and source_manifest identify the executed code.",
+  "gpu_uuid": "GPU-0d704e0b-4b8b-5463-afc8-4a032831fab4",
+  "gpu_model": "NVIDIA GeForce GTX 1660",
+  "directory_label": "1060 is the requested directory name, not the detected GPU model.",
+  "pytest": {
+    "passed": 190,
+    "seconds": 8.58,
+    "record": "Observed full pytest run before correctness; the original console transcript is in the chat tool output."
+  }
+}

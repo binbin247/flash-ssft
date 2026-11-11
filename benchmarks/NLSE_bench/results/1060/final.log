@@ -1,0 +1,6 @@
+2026-11-10T15:07:45.470321+00:00 Starting final
+[final] N=1024 numpy=0.472s pytorch=2.276s optimized=0.058s speedup=39.31x
+[final] N=2048 numpy=0.784s pytorch=2.183s optimized=0.073s speedup=30.03x
+[final] N=4096 numpy=1.339s pytorch=2.096s optimized=0.100s speedup=20.97x
+[final] N=8192 numpy=3.139s pytorch=2.030s optimized=0.151s speedup=13.45x
+2026-11-10T15:08:07.016656+00:00 Finished final

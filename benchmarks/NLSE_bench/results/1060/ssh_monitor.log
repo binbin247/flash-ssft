@@ -1,0 +1,40 @@
+2026-11-10T14:52:47.005498+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 256, "latest_compiled_warps": 2}
+2026-11-10T14:54:10.473226+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 256, "latest_compiled_warps": 8}
+2026-11-10T14:54:51.609908+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 512, "latest_compiled_warps": 1}
+2026-11-10T14:55:12.718618+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 512, "latest_compiled_warps": 2}
+2026-11-10T14:55:53.907429+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 512, "latest_compiled_warps": 4}
+2026-11-10T14:56:34.845595+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 4096, "latest_compiled_block": 512, "latest_compiled_warps": 8}
+2026-11-10T14:56:54.862518+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 64, "latest_compiled_warps": 1}
+2026-11-10T14:57:35.896621+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 64, "latest_compiled_warps": 2}
+2026-11-10T14:58:17.539846+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 64, "latest_compiled_warps": 4}
+2026-11-10T14:58:58.356573+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 64, "latest_compiled_warps": 8}
+2026-11-10T14:59:39.344272+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 128, "latest_compiled_warps": 1}
+2026-11-10T15:00:00.319268+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 128, "latest_compiled_warps": 2}
+2026-11-10T15:00:41.412507+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 128, "latest_compiled_warps": 4}
+2026-11-10T15:01:22.517884+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 128, "latest_compiled_warps": 8}
+2026-11-10T15:02:03.513962+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 256, "latest_compiled_warps": 1}
+2026-11-10T15:02:24.559865+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 256, "latest_compiled_warps": 2}
+2026-11-10T15:03:47.818699+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 256, "latest_compiled_warps": 8}
+2026-11-10T15:04:29.002848+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 512, "latest_compiled_warps": 1}
+2026-11-10T15:04:49.021794+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 512, "latest_compiled_warps": 2}
+2026-11-10T15:05:31.110084+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 512, "latest_compiled_warps": 4}
+2026-11-10T15:06:12.203407+00:00 {"phase": "waiting_for_original_kernel", "original_pid": 10567, "latest_compiled_n": 8192, "latest_compiled_block": 512, "latest_compiled_warps": 8}
+2026-11-10T15:06:32.203628+00:00 {"phase": "chunk", "n_samples": 1024, "steps": 4096, "graph_chunk": 2, "completed": 1}
+2026-11-10T15:06:53.279285+00:00 {"phase": "chunk", "n_samples": 2048, "steps": 4097, "graph_chunk": 8, "completed": 30}
+2026-11-10T15:07:14.383295+00:00 {"phase": "chunk", "n_samples": 4096, "steps": 4097, "graph_chunk": 64, "completed": 51}
+2026-11-10T15:07:34.383661+00:00 {"phase": "chunk", "n_samples": 8192, "steps": 4097, "graph_chunk": 4, "completed": 65}
+2026-11-10T15:07:55.523991+00:00 {"phase": "final"}
+2026-11-10T15:08:16.626792+00:00 {"phase": "convergence"}
+2026-11-10T15:08:36.627140+00:00 {"phase": "remote_complete", "row_counts": {"correctness": 25, "kernel_search": 64, "chunk_search": 72, "final": 4, "convergence": 3}, "selection": {"block": 256, "num_warps": 8, "geometric_mean_seconds": 0.09392851810954157, "sample_count": 4, "graph_chunk": 2, "chunk_geometric_mean_seconds": 0.09301981071689575, "chunk_scores": {"1": 0.1225654009909368, "2": 0.09301981071689575, "4": 0.09960115501904276, "8": 0.09771329357465598, "16": 0.09409102406797351, "32": 0.09390762623663852, "64": 0.1016603265084658, "128": 0.09623080240165215, "256": 0.11168908172577666}, "chunk_selection_steps": 4096}}
+2026-11-10T15:07:45.470321+00:00 Starting final
+[final] N=1024 numpy=0.472s pytorch=2.276s optimized=0.058s speedup=39.31x
+[final] N=2048 numpy=0.784s pytorch=2.183s optimized=0.073s speedup=30.03x
+[final] N=4096 numpy=1.339s pytorch=2.096s optimized=0.100s speedup=20.97x
+[final] N=8192 numpy=3.139s pytorch=2.030s optimized=0.151s speedup=13.45x
+2026-11-10T15:08:07.016656+00:00 Finished final
+2026-11-10T15:08:07.017049+00:00 Starting convergence
+{"phase": "convergence", "n_samples": 4096, "dz": 0.001, "steps": 4096, "target_z": 4.096, "seconds": 1.515261692002241, "relative_l2_to_smallest_dz": 0.0002773652704171385, "energy": 2.00001403058696, "finite": true}
+{"phase": "convergence", "n_samples": 4096, "dz": 0.0005, "steps": 8192, "target_z": 4.096, "seconds": 3.0210840299987467, "relative_l2_to_smallest_dz": 9.241734437610303e-05, "energy": 2.0000070135667194, "finite": true}
+{"phase": "convergence", "n_samples": 4096, "dz": 0.00025, "steps": 16384, "target_z": 4.096, "seconds": 5.704918601000827, "relative_l2_to_smallest_dz": 0.0, "energy": 2.00000350326487, "finite": true}
+2026-11-10T15:08:18.364819+00:00 Finished convergence
+2026-11-10T15:08:18.367605+00:00 All experiment phases complete
